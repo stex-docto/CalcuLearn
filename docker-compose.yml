@@ -1,0 +1,9 @@
+services:
+  frontend:
+    image: node:22-alpine
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    command: sh -c "yarn && yarn dev"
+    working_dir: /app

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//home/stex/projects/SOTA/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
