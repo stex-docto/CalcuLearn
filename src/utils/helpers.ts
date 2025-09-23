@@ -13,16 +13,16 @@ export function shuffleArray<T>(array: T[]): T[] {
 
 export function generateBlockColor(value: number): string {
   const colors = [
-    '#FF6B6B', // Red
-    '#4ECDC4', // Teal
-    '#45B7D1', // Blue
-    '#96CEB4', // Green
-    '#FFEAA7', // Yellow
-    '#DDA0DD', // Plum
-    '#98D8C8', // Mint
-    '#F7DC6F', // Light Yellow
-    '#BB8FCE', // Light Purple
-    '#85C1E9', // Light Blue
+    'red.400',    // Red
+    'teal.400',   // Teal
+    'blue.400',   // Blue
+    'green.400',  // Green
+    'yellow.400', // Yellow
+    'purple.400', // Purple
+    'cyan.400',   // Cyan
+    'orange.400', // Orange
+    'pink.400',   // Pink
+    'indigo.400', // Indigo
   ]
 
   return colors[value % colors.length]

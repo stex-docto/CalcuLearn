@@ -1,8 +1,8 @@
-import { useState, useCallback } from 'react'
-import { GameState, Block } from '@/types/game'
-import { generateId, generateBlockColor } from '@/utils/helpers'
+import { useCallback, useState } from 'react'
+import { Block, GameMode, GameState } from '@/types/game'
+import { generateBlockColor, generateId } from '@/utils/helpers'
 
-const initialGameState: GameState = {
+const createInitialGameState = (mode: GameMode): GameState => ({
   tower: [],
   currentProblem: {
     id: '',
@@ -10,21 +10,24 @@ const initialGameState: GameState = {
     answer: 0,
     options: [],
     difficulty: 'easy',
-    operation: 'addition',
+    operation: mode,
   },
   score: 0,
   level: 1,
   lives: 3,
   isGameRunning: false,
   fallingBlocks: [],
-}
+  mode,
+})
 
 export function useGameLogic() {
-  const [gameState, setGameState] = useState<GameState>(initialGameState)
+  const [gameState, setGameState] = useState<GameState>(
+    createInitialGameState('addition')
+  )
 
-  const startGame = useCallback(() => {
+  const startGame = useCallback((mode: GameMode = 'addition') => {
     setGameState({
-      ...initialGameState,
+      ...createInitialGameState(mode),
       isGameRunning: true,
       lives: 3,
     })
@@ -34,6 +37,21 @@ export function useGameLogic() {
     setGameState((prev) => ({
       ...prev,
       isGameRunning: false,
+    }))
+  }, [])
+
+  const changeMode = useCallback((newMode: GameMode) => {
+    setGameState((prev) => ({
+      ...prev,
+      mode: newMode,
+      currentProblem: {
+        id: '',
+        question: '',
+        answer: 0,
+        options: [],
+        difficulty: 'easy',
+        operation: newMode,
+      },
     }))
   }, [])
 
@@ -88,13 +106,43 @@ export function useGameLogic() {
 
         setGameState((prev) => ({
           ...prev,
-          level: Math.floor(prev.score / 100) + 1,
+          level: Math.floor((prev.score + blockValue * prev.level) / 100) + 1,
+          currentProblem: {
+            id: '',
+            question: '',
+            answer: 0,
+            options: [],
+            difficulty: 'easy',
+            operation: prev.mode,
+          },
         }))
       } else {
-        removeBlocksFromTower(2)
+        // Create a falling block for wrong answers (doesn't add to tower)
+        const blockValue = Math.max(
+          1,
+          Math.floor(gameState.currentProblem.answer / 10)
+        )
+        const fallingBlock: Block = {
+          id: generateId(),
+          value: blockValue,
+          decay: blockValue,
+          x: Math.random() * 400,
+          y: 0,
+          color: generateBlockColor(blockValue),
+        }
+
         setGameState((prev) => ({
           ...prev,
           lives: prev.lives - 1,
+          fallingBlocks: [...prev.fallingBlocks, fallingBlock],
+          currentProblem: {
+            id: '',
+            question: '',
+            answer: 0,
+            options: [],
+            difficulty: 'easy',
+            operation: prev.mode,
+          },
         }))
       }
     },
@@ -127,6 +175,7 @@ export function useGameLogic() {
     gameState,
     startGame,
     gameOver,
+    changeMode,
     answerProblem,
     updateCurrentProblem,
     updateFallingBlocks,

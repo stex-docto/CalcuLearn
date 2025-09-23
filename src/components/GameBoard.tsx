@@ -1,12 +1,15 @@
-import { Box, Button, Flex, Text, VStack, HStack } from '@chakra-ui/react'
+import { Box, Button, Flex, Heading, Text, VStack } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
-import { GameState } from '@/types/game'
+import { FaPlus, FaTimes } from 'react-icons/fa'
+import { GameMode, GameState } from '@/types/game'
 import TowerDisplay from './TowerDisplay'
 import GameStats from './GameStats'
+import ModeSelector from './ModeSelector'
+import { t } from '@/utils/translations'
 
 interface GameBoardProps {
   gameState: GameState
-  onStartGame: () => void
+  onStartGame: (mode: GameMode) => void
 }
 
 const MotionBox = motion.create(Box)
@@ -14,79 +17,132 @@ const MotionBox = motion.create(Box)
 export default function GameBoard({ gameState, onStartGame }: GameBoardProps) {
   if (!gameState.isGameRunning && gameState.tower.length === 0) {
     return (
-      <VStack spacing={6} align="center" minH="400px" justify="center">
+      <VStack
+        gap={{ base: 4, md: 6 }}
+        align="center"
+        minH={{ base: '300px', md: '400px' }}
+        justify="center"
+      >
         <MotionBox
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
+          width="100%"
         >
-          <Text fontSize="xl" textAlign="center" color="gray.600" mb={4}>
-            Build your math tower by solving problems correctly!
-          </Text>
-          <Text fontSize="md" textAlign="center" color="gray.500" mb={6}>
-            ✅ Correct answers add blocks to your tower
-            <br />
-            ❌ Wrong answers make blocks fall down
-            <br />
-            🏗️ Build the highest tower possible!
-          </Text>
-          <Button
-            size="lg"
-            colorScheme="blue"
-            onClick={onStartGame}
-            px={8}
-            py={6}
-            fontSize="lg"
+          <Heading
+            as="h1"
+            size={{ base: 'xl', md: '2xl' }}
+            textAlign="center"
+            colorPalette="blue"
+            color="colorPalette.500"
+            mb={2}
           >
-            Start Game
-          </Button>
+            {t('appTitle')}
+          </Heading>
+          <Text
+            fontSize={{ base: 'lg', md: 'xl' }}
+            textAlign="center"
+            color="fg.muted"
+            mb={{ base: 4, md: 6 }}
+          >
+            {t('appSubtitle')}
+          </Text>
+          <Text
+            fontSize={{ base: 'sm', md: 'md' }}
+            textAlign="center"
+            color="fg.subtle"
+            mb={{ base: 6, md: 8 }}
+          >
+            ✅ {t('instructionsCorrect')}
+            <br />❌ {t('instructionsWrong')}
+            <br />
+            🏗️ {t('instructionsGoal')}
+          </Text>
+
+          <ModeSelector
+            onStartGame={onStartGame}
+            isGameRunning={gameState.isGameRunning}
+          />
         </MotionBox>
       </VStack>
     )
   }
 
   return (
-    <VStack spacing={4} align="stretch">
+    <VStack gap={{ base: 3, md: 4 }} align="stretch">
       <GameStats gameState={gameState} />
 
       <Box
-        bg="gray.50"
+        bg="bg.subtle"
         borderRadius="lg"
-        p={6}
-        minH="500px"
-        position="relative"
-        overflow="hidden"
         border="2px solid"
-        borderColor="gray.200"
+        borderColor="border.muted"
+        overflow="hidden"
       >
-        <TowerDisplay
-          tower={gameState.tower}
-          fallingBlocks={gameState.fallingBlocks}
-        />
+        <Box
+          position="relative"
+          minH={{ base: '400px', md: '500px' }}
+          p={{ base: 4, md: 6 }}
+        >
+          <TowerDisplay
+            tower={gameState.tower}
+            fallingBlocks={gameState.fallingBlocks}
+          />
+        </Box>
 
         {!gameState.isGameRunning && (
-          <Flex
+          <Box
             position="absolute"
             top={0}
             left={0}
             right={0}
             bottom={0}
-            bg="rgba(0,0,0,0.8)"
-            align="center"
-            justify="center"
+            bg="blackAlpha.800"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
             flexDirection="column"
-            gap={4}
+            gap={{ base: 3, md: 4 }}
+            p={{ base: 4, md: 6 }}
           >
-            <Text fontSize="2xl" color="white" fontWeight="bold">
-              Game Over!
+            <Text
+              fontSize={{ base: 'xl', md: '2xl' }}
+              color="white"
+              fontWeight="bold"
+              textAlign="center"
+            >
+              {t('gameOverTitle')}
             </Text>
-            <Text fontSize="lg" color="white">
-              Final Score: {gameState.score}
+            <Text
+              fontSize={{ base: 'md', md: 'lg' }}
+              color="white"
+              textAlign="center"
+            >
+              {t('gameOverFinalScore')}: {gameState.score}
             </Text>
-            <Button colorScheme="blue" size="lg" onClick={onStartGame}>
-              Play Again
+            <Text
+              fontSize={{ base: 'sm', md: 'md' }}
+              color="whiteAlpha.800"
+              textAlign="center"
+            >
+              {gameState.mode === 'addition' ? <FaPlus /> : <FaTimes />}{' '}
+              {t('gameOverMode')}{' '}
+              {gameState.mode === 'addition'
+                ? t('modesAddition')
+                : t('modesMultiplication')}
+            </Text>
+            <Button
+              colorScheme={gameState.mode === 'addition' ? 'blue' : 'purple'}
+              size={{ base: 'md', md: 'lg' }}
+              onClick={() => onStartGame(gameState.mode)}
+            >
+              {t('gameOverPlayAgain')} (
+              {gameState.mode === 'addition'
+                ? t('modesAddition')
+                : t('modesMultiplication')}
+              )
             </Button>
-          </Flex>
+          </Box>
         )}
       </Box>
     </VStack>

@@ -7,6 +7,8 @@ export interface Block {
   color: string
 }
 
+export type GameMode = 'addition' | 'multiplication'
+
 export interface GameState {
   tower: Block[]
   currentProblem: Problem
@@ -15,6 +17,7 @@ export interface GameState {
   lives: number
   isGameRunning: boolean
   fallingBlocks: Block[]
+  mode: GameMode
 }
 
 export interface Problem {
@@ -31,4 +34,5 @@ export interface HighScore {
   score: number
   date: string
   level: number
+  mode: GameMode
 }

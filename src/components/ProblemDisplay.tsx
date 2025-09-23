@@ -1,4 +1,4 @@
-import { Box, Button, Text, VStack, SimpleGrid, Badge } from '@chakra-ui/react'
+import { Badge, Box, Button, SimpleGrid, Text, VStack } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { Problem } from '@/types/game'
 
@@ -17,11 +17,7 @@ export default function ProblemDisplay({
   isGameRunning,
 }: ProblemDisplayProps) {
   if (!isGameRunning || !problem.id) {
-    return (
-      <Box bg="gray.100" p={6} borderRadius="lg" textAlign="center">
-        <Text color="gray.500">Start the game to see problems!</Text>
-      </Box>
-    )
+    return <></>
   }
 
   const getDifficultyColor = (difficulty: Problem['difficulty']) => {
@@ -39,43 +35,50 @@ export default function ProblemDisplay({
 
   return (
     <MotionBox
-      bg="white"
-      p={6}
+      bg="bg"
+      p={{ base: 4, md: 6 }}
       borderRadius="lg"
       border="2px solid"
-      borderColor="blue.200"
+      borderColor="border.emphasized"
       shadow="md"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <VStack spacing={4}>
+      <VStack gap={{ base: 3, md: 4 }}>
         <Box textAlign="center">
           <Badge
             colorScheme={getDifficultyColor(problem.difficulty)}
-            mb={2}
+            mb={{ base: 1, md: 2 }}
             textTransform="capitalize"
+            fontSize={{ base: 'xs', md: 'sm' }}
           >
             {problem.difficulty} {problem.operation}
           </Badge>
-          <Text fontSize="2xl" fontWeight="bold" color="gray.700">
+          <Text
+            fontSize={{ base: 'xl', md: '2xl' }}
+            fontWeight="bold"
+            color="fg.emphasized"
+          >
             {problem.question}
           </Text>
         </Box>
 
-        <SimpleGrid columns={2} spacing={3} width="100%">
+        <SimpleGrid columns={2} gap={{ base: 2, md: 3 }} width="100%">
           {problem.options.map((option, index) => (
             <MotionButton
               key={`${problem.id}-${option}-${index}`}
-              size="lg"
+              size={{ base: 'md', md: 'lg' }}
               variant="outline"
               colorScheme="blue"
+              fontSize={{ base: 'md', md: 'lg' }}
+              py={{ base: 3, md: 4 }}
               onClick={() => onAnswer(option)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               _hover={{
-                bg: 'blue.50',
-                borderColor: 'blue.400',
+                bg: 'colorPalette.50',
+                borderColor: 'colorPalette.400',
               }}
             >
               {option}

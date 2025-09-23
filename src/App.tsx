@@ -1,12 +1,14 @@
-import { Box, Container, Heading, Text, VStack } from '@chakra-ui/react'
-import { useState, useEffect } from 'react'
-import { GameState, Problem } from '@/types/game'
+import { Box, Container, Flex, VStack } from '@chakra-ui/react'
+import { useEffect } from 'react'
 import GameBoard from '@/components/GameBoard'
 import ProblemDisplay from '@/components/ProblemDisplay'
 import HighScores from '@/components/HighScores'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 import { useGameLogic } from '@/hooks/useGameLogic'
 import { useProblemGenerator } from '@/hooks/useProblemGenerator'
 import { useHighScores } from '@/hooks/useHighScores'
+import { UI_Provider } from './ui'
 
 function App() {
   const {
@@ -17,27 +19,21 @@ function App() {
     updateCurrentProblem,
   } = useGameLogic()
   const { generateProblem } = useProblemGenerator()
-  const { highScores, addScore, clearScores } = useHighScores()
+  const { highScores, addScore, clearScores } = useHighScores(gameState.mode)
 
   useEffect(() => {
     if (gameState.isGameRunning && !gameState.currentProblem.id) {
-      const problem = generateProblem(gameState.level)
+      const problem = generateProblem(gameState.level, gameState.mode)
       updateCurrentProblem(problem)
     }
   }, [
     gameState.isGameRunning,
     gameState.currentProblem.id,
     gameState.level,
+    gameState.mode,
     generateProblem,
     updateCurrentProblem,
   ])
-
-  useEffect(() => {
-    if (gameState.isGameRunning && gameState.currentProblem.id) {
-      const problem = generateProblem(gameState.level)
-      updateCurrentProblem(problem)
-    }
-  }, [gameState.score])
 
   useEffect(() => {
     if (gameState.lives <= 0 && gameState.isGameRunning) {
@@ -48,6 +44,7 @@ function App() {
           score: gameState.score,
           date: new Date().toISOString(),
           level: gameState.level,
+          mode: gameState.mode,
         })
       }
     }
@@ -56,45 +53,49 @@ function App() {
     gameState.isGameRunning,
     gameState.score,
     gameState.level,
+    gameState.mode,
     gameOver,
     addScore,
   ])
 
   return (
-    <Container maxW="container.xl" py={8}>
-      <VStack spacing={8} align="stretch">
-        <Box textAlign="center">
-          <Heading as="h1" size="2xl" color="blue.500" mb={2}>
-            CalcuLearn
-          </Heading>
-          <Text fontSize="lg" color="gray.600">
-            Build your tower by solving math problems!
-          </Text>
-        </Box>
+    <UI_Provider>
+      <Flex direction="column" minH="100vh">
+        <Header gameState={gameState} onStartGame={startGame} />
 
-        <Box
-          display="flex"
-          gap={8}
-          flexDirection={{ base: 'column', lg: 'row' }}
-        >
-          <Box flex="2">
-            <GameBoard gameState={gameState} onStartGame={startGame} />
-          </Box>
+        <Container maxW="container.xl" py={8} as="main" flex="1">
+          <VStack gap={8} align="stretch">
+            <Box
+              display="flex"
+              gap={8}
+              flexDirection={{ base: 'column', lg: 'row' }}
+            >
+              <Box flex="2">
+                <GameBoard gameState={gameState} onStartGame={startGame} />
+              </Box>
 
-          <Box flex="1">
-            <VStack spacing={6} align="stretch">
-              <ProblemDisplay
-                problem={gameState.currentProblem}
-                onAnswer={answerProblem}
-                isGameRunning={gameState.isGameRunning}
-              />
+              <Box flex="1">
+                <VStack gap={6} align="stretch">
+                  <ProblemDisplay
+                    problem={gameState.currentProblem}
+                    onAnswer={answerProblem}
+                    isGameRunning={gameState.isGameRunning}
+                  />
 
-              <HighScores scores={highScores} onClear={clearScores} />
-            </VStack>
-          </Box>
-        </Box>
-      </VStack>
-    </Container>
+                  <HighScores
+                    scores={highScores}
+                    mode={gameState.mode}
+                    onClear={clearScores}
+                  />
+                </VStack>
+              </Box>
+            </Box>
+          </VStack>
+        </Container>
+
+        <Footer />
+      </Flex>
+    </UI_Provider>
   )
 }
 

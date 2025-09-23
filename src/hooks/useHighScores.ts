@@ -1,14 +1,16 @@
-import { useState, useEffect, useCallback } from 'react'
-import { HighScore } from '@/types/game'
+import { useCallback, useEffect, useState } from 'react'
+import { GameMode, HighScore } from '@/types/game'
 
-const STORAGE_KEY = 'calculearn-high-scores'
+const STORAGE_KEY_PREFIX = 'calculearn-high-scores'
 const MAX_SCORES = 10
 
-export function useHighScores() {
+const getStorageKey = (mode: GameMode) => `${STORAGE_KEY_PREFIX}-${mode}`
+
+export function useHighScores(mode: GameMode = 'addition') {
   const [highScores, setHighScores] = useState<HighScore[]>([])
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY)
+    const stored = localStorage.getItem(getStorageKey(mode))
     if (stored) {
       try {
         const scores = JSON.parse(stored)
@@ -17,16 +19,21 @@ export function useHighScores() {
         console.error('Error loading high scores:', error)
         setHighScores([])
       }
+    } else {
+      setHighScores([])
     }
-  }, [])
+  }, [mode])
 
-  const saveScoresToStorage = useCallback((scores: HighScore[]) => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(scores))
-    } catch (error) {
-      console.error('Error saving high scores:', error)
-    }
-  }, [])
+  const saveScoresToStorage = useCallback(
+    (scores: HighScore[]) => {
+      try {
+        localStorage.setItem(getStorageKey(mode), JSON.stringify(scores))
+      } catch (error) {
+        console.error('Error saving high scores:', error)
+      }
+    },
+    [mode]
+  )
 
   const addScore = useCallback(
     (newScore: HighScore) => {
@@ -44,8 +51,8 @@ export function useHighScores() {
 
   const clearScores = useCallback(() => {
     setHighScores([])
-    localStorage.removeItem(STORAGE_KEY)
-  }, [])
+    localStorage.removeItem(getStorageKey(mode))
+  }, [mode])
 
   const isHighScore = useCallback(
     (score: number) => {

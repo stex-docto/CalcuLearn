@@ -80,17 +80,15 @@ export function useProblemGenerator() {
   )
 
   const generateProblem = useCallback(
-    (level: number): Problem => {
-      const operations: Problem['operation'][] =
-        level < 3 ? ['addition'] : ['addition', 'multiplication']
-      const operation =
-        operations[Math.floor(Math.random() * operations.length)]
-
+    (
+      level: number,
+      mode: 'addition' | 'multiplication' = 'addition'
+    ): Problem => {
       let difficulty: Problem['difficulty'] = 'easy'
       if (level >= 5) difficulty = 'medium'
       if (level >= 10) difficulty = 'hard'
 
-      if (operation === 'addition') {
+      if (mode === 'addition') {
         return generateAdditionProblem(difficulty)
       } else {
         return generateMultiplicationProblem(difficulty)
