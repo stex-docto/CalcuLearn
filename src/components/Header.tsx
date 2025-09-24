@@ -1,7 +1,8 @@
 import { Box, Button, Container, HStack } from '@chakra-ui/react'
 import { FaPlus, FaTimes } from 'react-icons/fa'
 import { t } from '@/utils/translations'
-import { GameMode, GameState } from '@/types/game'
+import { GameMode } from '@/domain'
+import type { GameState } from '@/presentation/types/GameState'
 
 interface HeaderProps {
   gameState: GameState
@@ -35,9 +36,9 @@ export default function Header({ gameState, onStartGame }: HeaderProps) {
             <Button
               size={{ base: 'xs', md: 'sm' }}
               colorPalette="blue"
-              onClick={() => onStartGame('addition')}
+              onClick={() => onStartGame(GameMode.ADDITION)}
               variant={
-                gameState.mode === 'addition' && gameState.isGameRunning
+                gameState.mode === GameMode.ADDITION && gameState.isGameRunning
                   ? 'solid'
                   : 'outline'
               }
@@ -49,9 +50,10 @@ export default function Header({ gameState, onStartGame }: HeaderProps) {
             <Button
               size={{ base: 'xs', md: 'sm' }}
               colorPalette="purple"
-              onClick={() => onStartGame('multiplication')}
+              onClick={() => onStartGame(GameMode.MULTIPLICATION)}
               variant={
-                gameState.mode === 'multiplication' && gameState.isGameRunning
+                gameState.mode === GameMode.MULTIPLICATION &&
+                gameState.isGameRunning
                   ? 'solid'
                   : 'outline'
               }

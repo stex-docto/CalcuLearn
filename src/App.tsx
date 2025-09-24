@@ -1,44 +1,28 @@
 import { Box, Container, Flex, VStack } from '@chakra-ui/react'
-import { useEffect } from 'react'
+import { useCallback } from 'react'
+import { GameMode } from '@/domain'
 import GameBoard from '@/components/GameBoard'
 import ProblemDisplay from '@/components/ProblemDisplay'
 import HighScores from '@/components/HighScores'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import { useGameLogic } from '@/hooks/useGameLogic'
-import { useProblemGenerator } from '@/hooks/useProblemGenerator'
-import { useHighScores } from '@/hooks/useHighScores'
+import { useGameSession } from '@/presentation/hooks/useGameSession.ts'
+import { useHighScores } from '@/presentation/hooks/useHighScores.ts'
 import { UI_Provider } from './ui'
 
 function App() {
   const {
     gameState,
     answerProblem,
-    startGame,
-    gameOver,
-    updateCurrentProblem,
-  } = useGameLogic()
-  const { generateProblem } = useProblemGenerator()
+    startGame: originalStartGame,
+  } = useGameSession()
+
   const { highScores, addScore, clearScores } = useHighScores(gameState.mode)
 
-  useEffect(() => {
-    if (gameState.isGameRunning && !gameState.currentProblem.id) {
-      const problem = generateProblem(gameState.level, gameState.mode)
-      updateCurrentProblem(problem)
-    }
-  }, [
-    gameState.isGameRunning,
-    gameState.currentProblem.id,
-    gameState.level,
-    gameState.mode,
-    generateProblem,
-    updateCurrentProblem,
-  ])
-
-  useEffect(() => {
-    if (gameState.lives <= 0 && gameState.isGameRunning) {
-      gameOver()
-      if (gameState.score > 0) {
+  const startGame = useCallback(
+    (mode: GameMode) => {
+      // Save previous game score if it exists and game was running
+      if (gameState.isGameRunning && gameState.score > 0) {
         addScore({
           id: Date.now().toString(),
           score: gameState.score,
@@ -47,16 +31,17 @@ function App() {
           mode: gameState.mode,
         })
       }
-    }
-  }, [
-    gameState.lives,
-    gameState.isGameRunning,
-    gameState.score,
-    gameState.level,
-    gameState.mode,
-    gameOver,
-    addScore,
-  ])
+      originalStartGame(mode)
+    },
+    [
+      gameState.isGameRunning,
+      gameState.score,
+      gameState.level,
+      gameState.mode,
+      addScore,
+      originalStartGame,
+    ]
+  )
 
   return (
     <UI_Provider>
@@ -81,7 +66,6 @@ function App() {
                     onAnswer={answerProblem}
                     isGameRunning={gameState.isGameRunning}
                   />
-
                   <HighScores
                     scores={highScores}
                     mode={gameState.mode}

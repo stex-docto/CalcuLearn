@@ -24,7 +24,6 @@ const frTranslations = {
   statsScore: 'Score',
   statsLevel: 'Niveau',
   statsLives: 'Vies',
-  statsModeAndLevel: 'Mode & Niveau',
   statsHeight: 'Hauteur',
 
   // Game Over
@@ -79,7 +78,6 @@ const enTranslations = {
   statsScore: 'Score',
   statsLevel: 'Level',
   statsLives: 'Lives',
-  statsModeAndLevel: 'Mode & Level',
   statsHeight: 'Height',
 
   // Game Over

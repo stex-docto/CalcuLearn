@@ -14,10 +14,10 @@ export interface GameState {
   currentProblem: Problem
   score: number
   level: number
-  lives: number
   isGameRunning: boolean
   fallingBlocks: Block[]
   mode: GameMode
+  showLevelUp: boolean
 }
 
 export interface Problem {

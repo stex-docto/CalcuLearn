@@ -1,11 +1,12 @@
-import { Box, Button, Flex, Heading, Text, VStack } from '@chakra-ui/react'
+import { Box, Button, Heading, Text, VStack } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { FaPlus, FaTimes } from 'react-icons/fa'
-import { GameMode, GameState } from '@/types/game'
 import TowerDisplay from './TowerDisplay'
 import GameStats from './GameStats'
 import ModeSelector from './ModeSelector'
 import { t } from '@/utils/translations'
+import { GameMode } from '@/domain'
+import type { GameState } from '@/presentation/types/GameState'
 
 interface GameBoardProps {
   gameState: GameState
@@ -87,6 +88,8 @@ export default function GameBoard({ gameState, onStartGame }: GameBoardProps) {
           <TowerDisplay
             tower={gameState.tower}
             fallingBlocks={gameState.fallingBlocks}
+            showLevelUp={gameState.showLevelUp}
+            currentLevel={gameState.level}
           />
         </Box>
 
@@ -125,19 +128,21 @@ export default function GameBoard({ gameState, onStartGame }: GameBoardProps) {
               color="whiteAlpha.800"
               textAlign="center"
             >
-              {gameState.mode === 'addition' ? <FaPlus /> : <FaTimes />}{' '}
+              {gameState.mode === GameMode.ADDITION ? <FaPlus /> : <FaTimes />}{' '}
               {t('gameOverMode')}{' '}
-              {gameState.mode === 'addition'
+              {gameState.mode === GameMode.ADDITION
                 ? t('modesAddition')
                 : t('modesMultiplication')}
             </Text>
             <Button
-              colorScheme={gameState.mode === 'addition' ? 'blue' : 'purple'}
+              colorScheme={
+                gameState.mode === GameMode.ADDITION ? 'blue' : 'purple'
+              }
               size={{ base: 'md', md: 'lg' }}
               onClick={() => onStartGame(gameState.mode)}
             >
               {t('gameOverPlayAgain')} (
-              {gameState.mode === 'addition'
+              {gameState.mode === GameMode.ADDITION
                 ? t('modesAddition')
                 : t('modesMultiplication')}
               )

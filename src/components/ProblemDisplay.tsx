@@ -1,9 +1,11 @@
 import { Badge, Box, Button, SimpleGrid, Text, VStack } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
-import { Problem } from '@/types/game'
+import type { GameState } from '@/presentation/types/GameState'
+
+type ProblemData = GameState['currentProblem']
 
 interface ProblemDisplayProps {
-  problem: Problem
+  problem: ProblemData
   onAnswer: (answer: number) => void
   isGameRunning: boolean
 }
@@ -16,11 +18,11 @@ export default function ProblemDisplay({
   onAnswer,
   isGameRunning,
 }: ProblemDisplayProps) {
-  if (!isGameRunning || !problem.id) {
+  if (!isGameRunning || problem.isEmpty) {
     return <></>
   }
 
-  const getDifficultyColor = (difficulty: Problem['difficulty']) => {
+  const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
       case 'easy':
         return 'green'

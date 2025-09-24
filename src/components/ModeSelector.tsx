@@ -1,6 +1,6 @@
 import { Box, Text, VStack } from '@chakra-ui/react'
 import { FaPlus, FaTimes } from 'react-icons/fa'
-import { GameMode } from '@/types/game'
+import { GameMode } from '@/domain'
 import { t } from '@/utils/translations'
 
 interface ModeSelectorProps {
@@ -39,7 +39,7 @@ export default function ModeSelector({
           borderColor={'border.muted'}
           borderRadius="lg"
           cursor="pointer"
-          onClick={() => onStartGame('addition')}
+          onClick={() => onStartGame(GameMode.ADDITION)}
           transition="all 0.2s"
           _hover={{ transform: { base: 'scale(1.01)', md: 'scale(1.02)' } }}
           colorPalette="blue"
@@ -73,7 +73,7 @@ export default function ModeSelector({
           borderColor={'border.muted'}
           borderRadius="lg"
           cursor="pointer"
-          onClick={() => onStartGame('multiplication')}
+          onClick={() => onStartGame(GameMode.MULTIPLICATION)}
           transition="all 0.2s"
           _hover={{ transform: { base: 'scale(1.01)', md: 'scale(1.02)' } }}
           colorPalette="purple"

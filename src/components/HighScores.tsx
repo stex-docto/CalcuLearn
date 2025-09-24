@@ -8,7 +8,8 @@ import {
   VStack,
 } from '@chakra-ui/react'
 import { FaPlus, FaTimes, FaTrophy } from 'react-icons/fa'
-import { GameMode, HighScore } from '@/types/game'
+import { GameMode } from '@/domain'
+import { HighScore } from '@/types/game'
 import { formatDate } from '@/utils/helpers'
 import { t } from '@/utils/translations'
 
@@ -19,8 +20,8 @@ interface HighScoresProps {
 }
 
 export default function HighScores({ scores, mode, onClear }: HighScoresProps) {
-  const ModeIcon = mode === 'addition' ? FaPlus : FaTimes
-  const modeName = mode === 'addition' ? 'Addition' : 'Multiplication'
+  const ModeIcon = mode === GameMode.ADDITION ? FaPlus : FaTimes
+  const modeName = mode === GameMode.ADDITION ? 'Addition' : 'Multiplication'
   if (scores.length === 0) {
     return (
       <Box
