@@ -1,8 +1,6 @@
-import { Box, Center, Text } from '@chakra-ui/react'
+import { Box } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import type { GameState } from '@/presentation/types/GameState'
-import { t } from '@/presentation/translations.ts'
-import { GrAchievement } from 'react-icons/gr'
 import CompactHighScores from '@components/CompactHighScores.tsx'
 
 type BlockData = GameState['tower'][0]
@@ -10,8 +8,6 @@ type BlockData = GameState['tower'][0]
 interface TowerDisplayProps {
   tower: BlockData[]
   fallingBlocks: BlockData[]
-  showLevelUp?: boolean
-  currentLevel?: number
 }
 
 const MotionBox = motion.create(Box)
@@ -22,8 +18,6 @@ const CRANE_DROP_POSITION = 90 // Y position where crane drops blocks
 export default function TowerDisplay({
   tower,
   fallingBlocks,
-  showLevelUp = false,
-  currentLevel = 1,
 }: TowerDisplayProps) {
   return (
     <Box width="100%" height="100%" overflow="hidden" colorPalette="blue">
@@ -136,83 +130,6 @@ export default function TowerDisplay({
           bg="border.emphasized"
         />
       </MotionBox>
-
-      {/* Level Up Celebration */}
-      {showLevelUp && (
-        <Center minW="100%" minH="400px">
-          <MotionBox
-            position="absolute"
-            bg="yellow.400"
-            color="black"
-            px={8}
-            py={4}
-            borderRadius="xl"
-            fontSize="2xl"
-            fontWeight="bold"
-            textAlign="center"
-            border="3px solid"
-            borderColor="yellow.600"
-            initial={{
-              scale: 0,
-              rotate: 0,
-              opacity: 0,
-            }}
-            animate={{
-              scale: [0, 1, 0.8],
-              rotate: [0, 0, 0],
-              opacity: [0, 1, 1, 1, 0],
-            }}
-            transition={{
-              duration: 3,
-              times: [0, 0.3, 0.4, 0.8, 1],
-              ease: 'easeOut',
-            }}
-          >
-            <Center>
-              <GrAchievement />
-              <Text fontSize="lg" pl={2}>
-                {t('statsLevel')} {currentLevel}
-              </Text>
-            </Center>
-          </MotionBox>
-
-          {Array.from({ length: 20 }).map((_, i) => (
-            <MotionBox
-              position="absolute"
-              key={`confetti-${i}`}
-              width="8px"
-              height="8px"
-              bg={
-                [
-                  'yellow.400',
-                  'orange.400',
-                  'red.400',
-                  'blue.400',
-                  'green.400',
-                ][i % 5]
-              }
-              borderRadius="full"
-              initial={{
-                scale: 0,
-                x: 0,
-                y: 0,
-                opacity: 1,
-              }}
-              animate={{
-                scale: [0, 1, 0],
-                x: (Math.random() - 0.5) * 400,
-                y: (Math.random() - 0.5) * 300,
-                opacity: [0, 1, 0],
-              }}
-              transition={{
-                duration: 2 + Math.random(),
-                delay: Math.random() * 0.5,
-                ease: 'easeOut',
-              }}
-            />
-          ))}
-        </Center>
-      )}
     </Box>
   )
 }

@@ -81,8 +81,6 @@ export default function GameBoard() {
           <TowerDisplay
             tower={gameState.tower}
             fallingBlocks={gameState.fallingBlocks}
-            showLevelUp={gameState.showLevelUp}
-            currentLevel={gameState.level}
           />
         </Box>
       </Box>
