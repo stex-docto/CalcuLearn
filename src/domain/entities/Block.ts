@@ -1,6 +1,4 @@
-import { BlockId } from '../value-objects/BlockId'
-import { Position } from '../value-objects/Position'
-import { Color } from '../value-objects/Color'
+import { BlockId, Color, Position } from '@/domain'
 
 export class Block {
   constructor(
@@ -9,12 +7,8 @@ export class Block {
     public readonly color: Color
   ) {}
 
-  static create(value: number): Block {
-    return new Block(
-      BlockId.generate(),
-      Position.random(),
-      Color.fromValue(value)
-    )
+  static create(): Block {
+    return new Block(BlockId.generate(), Position.random(), Color.fromValue(0))
   }
 
   withPosition(position: Position): Block {
