@@ -1,4 +1,4 @@
-import { GameMode, GameSession } from '@/domain'
+import { GameSession, GameSettings, GameMode } from '@/domain'
 import {
   AnswerProblemResult,
   AnswerProblemUseCase,
@@ -16,8 +16,14 @@ export class GameApplicationService {
     private readonly manageHighScoresUseCase: ManageHighScoresUseCase
   ) {}
 
-  startGame(currentSession: GameSession, mode: GameMode): GameSession {
-    const newSession = this.startGameUseCase.execute(currentSession, mode)
+  startGame(
+    currentSession: GameSession,
+    gameSettings: GameSettings
+  ): GameSession {
+    const newSession = this.startGameUseCase.execute(
+      currentSession,
+      gameSettings
+    )
     return this.generateProblemUseCase.execute(newSession)
   }
 
@@ -62,5 +68,12 @@ export class GameApplicationService {
 
   cleanupFallingBlocks(session: GameSession): GameSession {
     return session.cleanupFallingBlocks()
+  }
+
+  updateGameSettings(
+    session: GameSession,
+    gameSettings: GameSettings
+  ): GameSession {
+    return session.updateGameSettings(gameSettings)
   }
 }

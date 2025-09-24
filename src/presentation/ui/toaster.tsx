@@ -7,7 +7,7 @@ import {
   Toast,
   Toaster as ChakraToaster,
 } from '@chakra-ui/react'
-import { toaster } from './toaster-config'
+import { toaster } from './toaster-config.ts'
 
 export const Toaster = () => {
   return (

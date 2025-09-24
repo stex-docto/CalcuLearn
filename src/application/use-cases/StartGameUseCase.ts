@@ -1,10 +1,13 @@
-import { GameMode, GameSession } from '@/domain'
+import { GameSession, GameSettings } from '@/domain'
 import { HighScore, HighScoreRepositoryPort } from '@/application'
 
 export class StartGameUseCase {
   constructor(private readonly highScoreRepository: HighScoreRepositoryPort) {}
 
-  execute(currentSession: GameSession, mode: GameMode): GameSession {
+  execute(
+    currentSession: GameSession,
+    gameSettings: GameSettings
+  ): GameSession {
     // Save current session score if it's running and has a score
     if (
       currentSession.getStatus().isRunning() &&
@@ -21,6 +24,6 @@ export class StartGameUseCase {
     }
 
     // Start new game session
-    return GameSession.create(mode).start()
+    return GameSession.create(gameSettings).start()
   }
 }

@@ -1,6 +1,5 @@
 import { Block } from './Block'
-import { TowerHeight } from '../value-objects/TowerHeight'
-import { Level } from '../value-objects/Level'
+import { TowerHeight } from '@/domain'
 
 export class Tower {
   private static readonly MAX_HEIGHT = 10
@@ -46,12 +45,6 @@ export class Tower {
 
   isEmpty(): boolean {
     return this.blocks.length === 0
-  }
-
-  calculateScore(level: Level): number {
-    return this.blocks.reduce((total, block) => {
-      return total + block.value.toNumber() * level.toNumber()
-    }, 0)
   }
 
   toPlainArray() {

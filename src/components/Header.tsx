@@ -1,15 +1,12 @@
 import { Box, Button, Container, HStack } from '@chakra-ui/react'
-import { FaPlus, FaTimes } from 'react-icons/fa'
-import { t } from '@/utils/translations'
-import { GameMode } from '@/domain'
-import type { GameState } from '@/presentation/types/GameState'
+import { FaHome } from 'react-icons/fa'
+import { t } from '@/presentation/translations.ts'
 
 interface HeaderProps {
-  gameState: GameState
-  onStartGame: (mode: GameMode) => void
+  onGoHome: () => void
 }
 
-export default function Header({ gameState, onStartGame }: HeaderProps) {
+export default function Header({ onGoHome }: HeaderProps) {
   return (
     <Box
       as="header"
@@ -34,33 +31,14 @@ export default function Header({ gameState, onStartGame }: HeaderProps) {
             wrap="wrap"
           >
             <Button
-              size={{ base: 'xs', md: 'sm' }}
-              colorPalette="blue"
-              onClick={() => onStartGame(GameMode.ADDITION)}
-              variant={
-                gameState.mode === GameMode.ADDITION && gameState.isGameRunning
-                  ? 'solid'
-                  : 'outline'
-              }
-              minW={{ base: '80px', md: 'auto' }}
+              size={{ base: 'sm', md: 'md' }}
+              colorPalette="gray"
+              variant="outline"
+              onClick={onGoHome}
+              minW={{ base: '100px', md: 'auto' }}
             >
-              <FaPlus />
-              {t('modesAddition')}
-            </Button>
-            <Button
-              size={{ base: 'xs', md: 'sm' }}
-              colorPalette="purple"
-              onClick={() => onStartGame(GameMode.MULTIPLICATION)}
-              variant={
-                gameState.mode === GameMode.MULTIPLICATION &&
-                gameState.isGameRunning
-                  ? 'solid'
-                  : 'outline'
-              }
-              minW={{ base: '80px', md: 'auto' }}
-            >
-              <FaTimes />
-              {t('modesMultiplication')}
+              <FaHome />
+              {t('headerHome')}
             </Button>
           </HStack>
         </Box>

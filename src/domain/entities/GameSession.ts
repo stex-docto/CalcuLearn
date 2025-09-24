@@ -4,6 +4,7 @@ import { Block } from './Block'
 import { Score } from '../value-objects/Score'
 import { Level } from '../value-objects/Level'
 import { GameMode } from '../enums/GameMode'
+import { GameSettings } from '../value-objects/GameSettings'
 import { GameStatus } from '../value-objects/GameStatus'
 
 export class GameSession {
@@ -14,19 +15,19 @@ export class GameSession {
     private readonly level: Level,
     private readonly status: GameStatus,
     private readonly fallingBlocks: Block[],
-    private readonly mode: GameMode,
+    private readonly gameSettings: GameSettings,
     private readonly showLevelUp: boolean
   ) {}
 
-  static create(mode: GameMode): GameSession {
+  static create(gameSettings: GameSettings): GameSession {
     return new GameSession(
       Tower.empty(),
-      Problem.empty(mode),
+      Problem.empty(gameSettings.getMode()),
       Score.zero(),
       Level.initial(),
       GameStatus.stopped(),
       [],
-      mode,
+      gameSettings,
       false
     )
   }
@@ -39,7 +40,7 @@ export class GameSession {
       this.level,
       GameStatus.running(),
       this.fallingBlocks,
-      this.mode,
+      this.gameSettings,
       false
     )
   }
@@ -52,7 +53,7 @@ export class GameSession {
       this.level,
       GameStatus.stopped(),
       this.fallingBlocks,
-      this.mode,
+      this.gameSettings,
       false
     )
   }
@@ -89,12 +90,12 @@ export class GameSession {
       return {
         session: new GameSession(
           tower,
-          Problem.empty(this.mode),
+          Problem.empty(this.gameSettings.getMode()),
           newScore,
           newLevel,
           this.status,
           this.fallingBlocks,
-          this.mode,
+          this.gameSettings,
           showLevelUp
         ),
         events,
@@ -122,12 +123,12 @@ export class GameSession {
       return {
         session: new GameSession(
           tower,
-          Problem.empty(this.mode),
+          Problem.empty(this.gameSettings.getMode()),
           newScore,
           this.level,
           this.status,
           newFallingBlocks,
-          this.mode,
+          this.gameSettings,
           false
         ),
         events,
@@ -143,7 +144,7 @@ export class GameSession {
       this.level,
       this.status,
       this.fallingBlocks,
-      this.mode,
+      this.gameSettings,
       this.showLevelUp
     )
   }
@@ -156,8 +157,21 @@ export class GameSession {
       this.level,
       this.status,
       this.fallingBlocks,
-      this.mode,
+      this.gameSettings,
       false
+    )
+  }
+
+  updateGameSettings(newGameSettings: GameSettings): GameSession {
+    return new GameSession(
+      this.tower,
+      Problem.empty(newGameSettings.getMode()),
+      this.score,
+      this.level,
+      this.status,
+      this.fallingBlocks,
+      newGameSettings,
+      this.showLevelUp
     )
   }
 
@@ -172,7 +186,7 @@ export class GameSession {
       this.level,
       this.status,
       cleanedBlocks,
-      this.mode,
+      this.gameSettings,
       this.showLevelUp
     )
   }
@@ -207,7 +221,11 @@ export class GameSession {
   }
 
   getMode(): GameMode {
-    return this.mode
+    return this.gameSettings.getMode()
+  }
+
+  getGameSettings(): GameSettings {
+    return this.gameSettings
   }
 
   getShowLevelUp(): boolean {
@@ -225,7 +243,8 @@ export class GameSession {
       level: this.level.toNumber(),
       isGameRunning: this.status.isRunning(),
       fallingBlocks: this.fallingBlocks.map((block) => block.toPlainObject()),
-      mode: this.mode,
+      mode: this.gameSettings.getMode(),
+      tables: this.gameSettings.getTables(),
       showLevelUp: this.showLevelUp,
     }
   }

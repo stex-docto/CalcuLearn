@@ -1,78 +1,23 @@
 import { ProblemGeneratorPort } from '@/application'
-import { Difficulty, GameMode, Level, Problem } from '@/domain'
+import { GameMode, GameSettings, Problem, TableSelection } from '@/domain'
 
 export class ProblemGeneratorAdapter implements ProblemGeneratorPort {
-  generateProblem(level: Level, mode: GameMode): Problem {
-    const difficulty = Difficulty.fromLevel(level.toNumber())
+  generateProblem(gameSettings: GameSettings): Problem {
+    const mode = gameSettings.getMode()
+    const tableSelection = gameSettings.getTableSelection()
 
     if (mode === GameMode.ADDITION) {
-      return this.generateAdditionProblem(difficulty)
+      return this.generateAdditionProblem(tableSelection)
     } else {
-      return this.generateMultiplicationProblem(difficulty)
+      return this.generateMultiplicationProblem(tableSelection)
     }
   }
 
-  private generateAdditionProblem(difficulty: Difficulty): Problem {
-    let num1: number, num2: number
-
-    switch (difficulty.toString()) {
-      case 'easy':
-        num1 = Math.floor(Math.random() * 10) + 1
-        num2 = Math.floor(Math.random() * 10) + 1
-        break
-      case 'medium':
-        num1 = Math.floor(Math.random() * 50) + 10
-        num2 = Math.floor(Math.random() * 50) + 10
-        break
-      case 'hard':
-        num1 = Math.floor(Math.random() * 100) + 50
-        num2 = Math.floor(Math.random() * 100) + 50
-        break
-      default:
-        num1 = 1
-        num2 = 1
-    }
+  private generateAdditionProblem(tableSelection: TableSelection): Problem {
+    const num1 = tableSelection.getRandomTable()
+    const num2 = Math.floor(Math.random() * 9) + 1
 
     const answer = num1 + num2
-    const wrongAnswers = [
-      answer + Math.floor(Math.random() * 5) + 1,
-      answer - Math.floor(Math.random() * 5) - 1,
-      answer + Math.floor(Math.random() * 10) + 5,
-    ]
-
-    const options = this.shuffleArray([answer, ...wrongAnswers])
-
-    return Problem.create(
-      `${num1} + ${num2} = ?`,
-      answer,
-      options,
-      difficulty.toString(),
-      'addition'
-    )
-  }
-
-  private generateMultiplicationProblem(difficulty: Difficulty): Problem {
-    let num1: number, num2: number
-
-    switch (difficulty.toString()) {
-      case 'easy':
-        num1 = Math.floor(Math.random() * 10) + 1
-        num2 = Math.floor(Math.random() * 10) + 1
-        break
-      case 'medium':
-        num1 = Math.floor(Math.random() * 12) + 1
-        num2 = Math.floor(Math.random() * 12) + 1
-        break
-      case 'hard':
-        num1 = Math.floor(Math.random() * 15) + 5
-        num2 = Math.floor(Math.random() * 15) + 5
-        break
-      default:
-        num1 = 1
-        num2 = 1
-    }
-
-    const answer = num1 * num2
     const wrongAnswers = [
       answer + Math.floor(Math.random() * 10) + 1,
       answer - Math.floor(Math.random() * 10) - 1,
@@ -82,11 +27,35 @@ export class ProblemGeneratorAdapter implements ProblemGeneratorPort {
     const options = this.shuffleArray([answer, ...wrongAnswers])
 
     return Problem.create(
+      `${num1} + ${num2} = ?`,
+      answer,
+      options,
+      'addition',
+      tableSelection
+    )
+  }
+
+  private generateMultiplicationProblem(
+    tableSelection: TableSelection
+  ): Problem {
+    const num1 = tableSelection.getRandomTable()
+    const num2 = Math.floor(Math.random() * 9) + 1
+
+    const answer = num1 * num2
+    const wrongAnswers = [
+      answer + Math.floor(Math.random() * 15) + 1,
+      answer - Math.floor(Math.random() * 15) - 1,
+      answer + Math.floor(Math.random() * 25) + 5,
+    ]
+
+    const options = this.shuffleArray([answer, ...wrongAnswers])
+
+    return Problem.create(
       `${num1} × ${num2} = ?`,
       answer,
       options,
-      difficulty.toString(),
-      'multiplication'
+      'multiplication',
+      tableSelection
     )
   }
 

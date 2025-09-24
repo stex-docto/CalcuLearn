@@ -1,9 +1,11 @@
-import { ProblemId } from '../value-objects/ProblemId'
-import { Question } from '../value-objects/Question'
-import { Answer } from '../value-objects/Answer'
-import { Difficulty } from '../value-objects/Difficulty'
-import { Operation } from '../value-objects/Operation'
-import { Options } from '../value-objects/Options'
+import {
+  Answer,
+  Operation,
+  Options,
+  ProblemId,
+  Question,
+  TableSelection,
+} from '@/domain'
 
 export class Problem {
   constructor(
@@ -11,7 +13,7 @@ export class Problem {
     public readonly question: Question,
     public readonly answer: Answer,
     public readonly options: Options,
-    public readonly difficulty: Difficulty,
+    public readonly tableSelection: TableSelection | null,
     public readonly operation: Operation
   ) {}
 
@@ -19,15 +21,15 @@ export class Problem {
     question: string,
     answer: number,
     options: number[],
-    difficulty: 'easy' | 'medium' | 'hard',
-    operation: 'addition' | 'multiplication'
+    operation: 'addition' | 'multiplication',
+    tableSelection?: TableSelection
   ): Problem {
     return new Problem(
       ProblemId.generate(),
       Question.create(question),
       Answer.create(answer),
       Options.create(options),
-      Difficulty.create(difficulty),
+      tableSelection || null,
       Operation.create(operation)
     )
   }
@@ -38,7 +40,7 @@ export class Problem {
       Question.empty(),
       Answer.create(0),
       Options.empty(),
-      Difficulty.create('easy'),
+      null,
       Operation.create(operation)
     )
   }
@@ -57,7 +59,7 @@ export class Problem {
       question: this.question.toString(),
       answer: this.answer.toNumber(),
       options: this.options.toArray(),
-      difficulty: this.difficulty.toString() as 'easy' | 'medium' | 'hard',
+      tables: this.tableSelection?.toArray() || [],
       operation: this.operation.toString() as 'addition' | 'multiplication',
     }
   }

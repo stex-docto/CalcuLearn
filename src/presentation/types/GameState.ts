@@ -3,8 +3,6 @@ import { GameMode } from '@/domain'
 export interface GameState {
   tower: Array<{
     id: string
-    value: number
-    decay: number
     x: number
     y: number
     color: string
@@ -14,7 +12,7 @@ export interface GameState {
     question: string
     answer: number
     options: number[]
-    difficulty: string
+    tables: number[]
     operation: string
     isEmpty: boolean
   }
@@ -23,8 +21,6 @@ export interface GameState {
   isGameRunning: boolean
   fallingBlocks: Array<{
     id: string
-    value: number
-    decay: number
     x: number
     y: number
     color: string

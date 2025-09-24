@@ -1,21 +1,15 @@
-import { Box, Button, Heading, Text, VStack } from '@chakra-ui/react'
+import { Box, Heading, Text, VStack } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
-import { FaPlus, FaTimes } from 'react-icons/fa'
 import TowerDisplay from './TowerDisplay'
-import GameStats from './GameStats'
 import ModeSelector from './ModeSelector'
-import { t } from '@/utils/translations'
-import { GameMode } from '@/domain'
-import type { GameState } from '@/presentation/types/GameState'
-
-interface GameBoardProps {
-  gameState: GameState
-  onStartGame: (mode: GameMode) => void
-}
+import { t } from '@/presentation/translations.ts'
+import { useGameSession } from '@/presentation/hooks/useGameSession.ts'
 
 const MotionBox = motion.create(Box)
 
-export default function GameBoard({ gameState, onStartGame }: GameBoardProps) {
+export default function GameBoard() {
+  const { gameState, startGame, updateGameSettings } = useGameSession()
+
   if (!gameState.isGameRunning && gameState.tower.length === 0) {
     return (
       <VStack
@@ -61,8 +55,9 @@ export default function GameBoard({ gameState, onStartGame }: GameBoardProps) {
           </Text>
 
           <ModeSelector
-            onStartGame={onStartGame}
+            onStartGame={startGame}
             isGameRunning={gameState.isGameRunning}
+            onUpdateGameSettings={updateGameSettings}
           />
         </MotionBox>
       </VStack>
@@ -71,8 +66,6 @@ export default function GameBoard({ gameState, onStartGame }: GameBoardProps) {
 
   return (
     <VStack gap={{ base: 3, md: 4 }} align="stretch">
-      <GameStats gameState={gameState} />
-
       <Box
         bg="bg.subtle"
         borderRadius="lg"
@@ -92,63 +85,6 @@ export default function GameBoard({ gameState, onStartGame }: GameBoardProps) {
             currentLevel={gameState.level}
           />
         </Box>
-
-        {!gameState.isGameRunning && (
-          <Box
-            position="absolute"
-            top={0}
-            left={0}
-            right={0}
-            bottom={0}
-            bg="blackAlpha.800"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            flexDirection="column"
-            gap={{ base: 3, md: 4 }}
-            p={{ base: 4, md: 6 }}
-          >
-            <Text
-              fontSize={{ base: 'xl', md: '2xl' }}
-              color="white"
-              fontWeight="bold"
-              textAlign="center"
-            >
-              {t('gameOverTitle')}
-            </Text>
-            <Text
-              fontSize={{ base: 'md', md: 'lg' }}
-              color="white"
-              textAlign="center"
-            >
-              {t('gameOverFinalScore')}: {gameState.score}
-            </Text>
-            <Text
-              fontSize={{ base: 'sm', md: 'md' }}
-              color="whiteAlpha.800"
-              textAlign="center"
-            >
-              {gameState.mode === GameMode.ADDITION ? <FaPlus /> : <FaTimes />}{' '}
-              {t('gameOverMode')}{' '}
-              {gameState.mode === GameMode.ADDITION
-                ? t('modesAddition')
-                : t('modesMultiplication')}
-            </Text>
-            <Button
-              colorScheme={
-                gameState.mode === GameMode.ADDITION ? 'blue' : 'purple'
-              }
-              size={{ base: 'md', md: 'lg' }}
-              onClick={() => onStartGame(gameState.mode)}
-            >
-              {t('gameOverPlayAgain')} (
-              {gameState.mode === GameMode.ADDITION
-                ? t('modesAddition')
-                : t('modesMultiplication')}
-              )
-            </Button>
-          </Box>
-        )}
       </Box>
     </VStack>
   )

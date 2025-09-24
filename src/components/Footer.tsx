@@ -1,7 +1,7 @@
 import { Box, Button, Flex, HStack, Text, VStack } from '@chakra-ui/react'
 import { useState } from 'react'
-import { getLanguage, toggleLanguage } from '@/utils/translations'
-import { ColorModeButton } from '@/ui/color-mode.tsx'
+import { getLanguage, toggleLanguage } from '@/presentation/translations.ts'
+import { ColorModeButton } from '@/presentation'
 
 export default function Footer() {
   const [, forceUpdate] = useState({})

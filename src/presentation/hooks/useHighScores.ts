@@ -20,19 +20,13 @@ export function useHighScores(mode: GameMode) {
     [gameService, loadScores]
   )
 
-  const clearScores = useCallback(() => {
-    gameService.clearHighScores(mode)
-    loadScores()
-  }, [gameService, mode, loadScores])
-
   // Load scores when mode changes
   useEffect(() => {
     loadScores()
   }, [loadScores])
 
   return {
-    highScores: scores,
+    scores,
     addScore,
-    clearScores,
   }
 }

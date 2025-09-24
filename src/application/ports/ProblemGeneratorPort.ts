@@ -1,5 +1,5 @@
-import { GameMode, Level, Problem } from '@/domain'
+import { Problem, GameSettings } from '@/domain'
 
 export interface ProblemGeneratorPort {
-  generateProblem(level: Level, mode: GameMode): Problem
+  generateProblem(gameSettings: GameSettings): Problem
 }

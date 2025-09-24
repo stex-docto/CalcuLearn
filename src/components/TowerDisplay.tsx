@@ -1,8 +1,9 @@
 import { Box, Center, Text } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import type { GameState } from '@/presentation/types/GameState'
-import { t } from '@/utils/translations'
+import { t } from '@/presentation/translations.ts'
 import { GrAchievement } from 'react-icons/gr'
+import CompactHighScores from '@components/CompactHighScores.tsx'
 
 type BlockData = GameState['tower'][0]
 
@@ -37,6 +38,10 @@ export default function TowerDisplay({
           duration: 1.2,
         }}
       >
+        <Box minW="200px">
+          <CompactHighScores />
+        </Box>
+
         {/* Tower blocks */}
         {tower.map((block, visibleIndex) => {
           const finalBottomPosition = visibleIndex * BLOCK_HEIGHT + 10
@@ -77,9 +82,7 @@ export default function TowerDisplay({
                 delay: visibleIndex * 0.1,
               }}
               whileHover={{ scale: 1.05 }}
-            >
-              {block.decay}
-            </MotionBox>
+            />
           )
         })}
 
@@ -120,9 +123,7 @@ export default function TowerDisplay({
               ease: 'easeIn',
               times: [0, 0.3, 1],
             }}
-          >
-            {block.decay}
-          </MotionBox>
+          />
         ))}
 
         {/* Ground line */}
@@ -134,27 +135,6 @@ export default function TowerDisplay({
           height="2px"
           bg="border.emphasized"
         />
-
-        {/* Tower height indicator */}
-        {tower.length > 0 && (
-          <Box
-            position="absolute"
-            right="10px"
-            top="10px"
-            bg="bg"
-            border="1px solid"
-            borderColor="border.muted"
-            px={3}
-            py={2}
-            borderRadius="md"
-            fontSize="sm"
-            fontWeight="bold"
-            color="fg.emphasized"
-            shadow="sm"
-          >
-            {t('towerHeight')}: {tower.length}
-          </Box>
-        )}
       </MotionBox>
 
       {/* Level Up Celebration */}

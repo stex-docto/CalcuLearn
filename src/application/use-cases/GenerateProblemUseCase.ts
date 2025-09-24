@@ -10,8 +10,7 @@ export class GenerateProblemUseCase {
     }
 
     const problem = this.problemGenerator.generateProblem(
-      session.getLevel(),
-      session.getMode()
+      session.getGameSettings()
     )
 
     return session.updateProblem(problem)

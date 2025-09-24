@@ -24,7 +24,6 @@ const frTranslations = {
   statsScore: 'Score',
   statsLevel: 'Niveau',
   statsLives: 'Vies',
-  statsHeight: 'Hauteur',
 
   // Game Over
   gameOverTitle: 'Jeu Terminé !',
@@ -39,7 +38,6 @@ const frTranslations = {
   highScoresClear: 'Effacer',
 
   // Tower Display
-  towerHeight: 'Hauteur',
   towerBlocksBelow: 'blocs ci-dessous',
   towerMoreBlocksBelow: 'autres blocs ci-dessous',
 
@@ -49,10 +47,23 @@ const frTranslations = {
   problemsMedium: 'moyen',
   problemsHard: 'difficile',
 
+  // Table Selection
+  tablesAddition: "Choisissez les tables pour l'addition",
+  tablesMultiplication: 'Choisissez les tables de multiplication',
+  tablesSelectInstructions: 'Sélectionnez une ou plusieurs tables à pratiquer',
+  tablesSelectAll: 'Tout sélectionner',
+  tablesClear: 'Effacer',
+  tablesSelected: 'Tables sélectionnées',
+  tablesAll: 'toutes les tables',
+  gameStart: 'Commencer le jeu',
+
   // Difficulty levels
   difficultyEasy: 'Facile',
   difficultyMedium: 'Moyen',
   difficultyHard: 'Difficile',
+
+  // Header
+  headerHome: 'Accueil',
 }
 
 const enTranslations = {
@@ -78,7 +89,6 @@ const enTranslations = {
   statsScore: 'Score',
   statsLevel: 'Level',
   statsLives: 'Lives',
-  statsHeight: 'Height',
 
   // Game Over
   gameOverTitle: 'Game Over!',
@@ -93,7 +103,6 @@ const enTranslations = {
   highScoresClear: 'Clear',
 
   // Tower Display
-  towerHeight: 'Height',
   towerBlocksBelow: 'blocks below',
   towerMoreBlocksBelow: 'more blocks below',
 
@@ -103,10 +112,23 @@ const enTranslations = {
   problemsMedium: 'medium',
   problemsHard: 'hard',
 
+  // Table Selection
+  tablesAddition: 'Choose tables for addition',
+  tablesMultiplication: 'Choose multiplication tables',
+  tablesSelectInstructions: 'Select one or more tables to practice',
+  tablesSelectAll: 'Select All',
+  tablesClear: 'Clear',
+  tablesSelected: 'Selected tables',
+  tablesAll: 'all tables',
+  gameStart: 'Start Game',
+
   // Difficulty levels
   difficultyEasy: 'Easy',
   difficultyMedium: 'Medium',
   difficultyHard: 'Hard',
+
+  // Header
+  headerHome: 'Home',
 }
 
 export const translations = {

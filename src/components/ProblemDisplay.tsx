@@ -1,38 +1,19 @@
 import { Badge, Box, Button, SimpleGrid, Text, VStack } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
-import type { GameState } from '@/presentation/types/GameState'
-
-type ProblemData = GameState['currentProblem']
-
-interface ProblemDisplayProps {
-  problem: ProblemData
-  onAnswer: (answer: number) => void
-  isGameRunning: boolean
-}
+import { useGameSession } from '@/presentation/hooks/useGameSession.ts'
 
 const MotionButton = motion.create(Button)
 const MotionBox = motion.create(Box)
 
-export default function ProblemDisplay({
-  problem,
-  onAnswer,
-  isGameRunning,
-}: ProblemDisplayProps) {
-  if (!isGameRunning || problem.isEmpty) {
+export default function ProblemDisplay() {
+  const { gameState, answerProblem } = useGameSession()
+  const problem = gameState.currentProblem
+  if (!gameState.isGameRunning || problem.isEmpty) {
     return <></>
   }
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'easy':
-        return 'green'
-      case 'medium':
-        return 'orange'
-      case 'hard':
-        return 'red'
-      default:
-        return 'gray'
-    }
+  const getModeColor = (operation: string) => {
+    return operation === 'addition' ? 'blue' : 'purple'
   }
 
   return (
@@ -50,12 +31,12 @@ export default function ProblemDisplay({
       <VStack gap={{ base: 3, md: 4 }}>
         <Box textAlign="center">
           <Badge
-            colorScheme={getDifficultyColor(problem.difficulty)}
+            colorScheme={getModeColor(problem.operation)}
             mb={{ base: 1, md: 2 }}
             textTransform="capitalize"
             fontSize={{ base: 'xs', md: 'sm' }}
           >
-            {problem.difficulty} {problem.operation}
+            {problem.operation} - Tables {problem.tables.join(', ')}
           </Badge>
           <Text
             fontSize={{ base: 'xl', md: '2xl' }}
@@ -67,7 +48,7 @@ export default function ProblemDisplay({
         </Box>
 
         <SimpleGrid columns={2} gap={{ base: 2, md: 3 }} width="100%">
-          {problem.options.map((option, index) => (
+          {problem.options.map((option: number, index: number) => (
             <MotionButton
               key={`${problem.id}-${option}-${index}`}
               size={{ base: 'md', md: 'lg' }}
@@ -75,7 +56,7 @@ export default function ProblemDisplay({
               colorScheme="blue"
               fontSize={{ base: 'md', md: 'lg' }}
               py={{ base: 3, md: 4 }}
-              onClick={() => onAnswer(option)}
+              onClick={() => answerProblem(option)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               _hover={{

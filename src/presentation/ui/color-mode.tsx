@@ -6,7 +6,7 @@ import type { ThemeProviderProps } from 'next-themes'
 import { ThemeProvider } from 'next-themes'
 import * as React from 'react'
 import { LuMoon, LuSun } from 'react-icons/lu'
-import { useColorMode } from './color-mode-utils'
+import { useColorMode } from './color-mode-utils.ts'
 
 export type ColorModeProviderProps = ThemeProviderProps
 
