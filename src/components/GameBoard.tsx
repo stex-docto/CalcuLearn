@@ -2,12 +2,13 @@ import { Box, Heading, Text, VStack } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import TowerDisplay from './TowerDisplay'
 import ModeSelector from './ModeSelector'
-import { t } from '@/presentation/translations.ts'
+import { useTranslation } from 'react-i18next'
 import { useGameSession } from '@/presentation/hooks/useGameSession.ts'
 
 const MotionBox = motion.create(Box)
 
 export default function GameBoard() {
+  const { t } = useTranslation()
   const { gameState, startGame, updateGameSettings } = useGameSession()
 
   if (!gameState.isGameRunning && gameState.tower.length === 0) {

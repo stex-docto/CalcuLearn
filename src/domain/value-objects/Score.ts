@@ -1,24 +1,34 @@
 export class Score {
-  constructor(private readonly value: number) {
+  constructor(
+    private readonly value: number,
+    private readonly floorValue: number
+  ) {
     if (value < 0) {
       throw new Error('Score cannot be negative')
     }
   }
 
-  static create(value: number): Score {
-    return new Score(Math.max(0, value))
+  static create(value: number, floorValue = 0): Score {
+    return new Score(Math.max(0, value), floorValue)
   }
 
   static zero(): Score {
-    return new Score(0)
+    return new Score(0, 0)
   }
 
   add(points: number): Score {
-    return new Score(this.value + points)
+    return new Score(this.value + points, this.floorValue)
+  }
+
+  bank(): Score {
+    const max = Math.max(this.value, this.floorValue)
+    return new Score(max, max)
   }
 
   subtract(points: number): Score {
-    return new Score(Math.max(0, this.value - points))
+    const value = this.value - points
+    const max = Math.max(value, this.floorValue)
+    return new Score(max, this.floorValue)
   }
 
   equals(other: Score): boolean {

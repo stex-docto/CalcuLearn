@@ -1,11 +1,13 @@
 import { Tower } from './Tower'
-import { Problem } from './Problem'
+import {
+  GameMode,
+  GameSettings,
+  GameStatus,
+  Level,
+  Problem,
+  Score,
+} from '@/domain'
 import { Block } from './Block'
-import { Score } from '../value-objects/Score'
-import { Level } from '../value-objects/Level'
-import { GameMode } from '../enums/GameMode'
-import { GameSettings } from '../value-objects/GameSettings'
-import { GameStatus } from '../value-objects/GameStatus'
 
 export class GameSession {
   constructor(
@@ -70,15 +72,15 @@ export class GameSession {
     const isCorrect = this.currentProblem.isCorrectAnswer(selectedAnswer)
 
     if (isCorrect) {
-      const blockValue = 1
-      const newBlock = Block.create(blockValue)
+      const newBlock = Block.create()
       const { tower, isComplete } = this.tower.addBlock(newBlock)
 
-      const newScore = this.score.add(blockValue * this.level.toNumber())
+      let newScore = this.score.add(1)
       let newLevel = this.level
       let showLevelUp = false
 
       if (isComplete) {
+        newScore = newScore.bank()
         newLevel = this.level.increment()
         showLevelUp = true
         events.push({ type: 'TOWER_COMPLETED', level: newLevel.toNumber() })
@@ -104,15 +106,14 @@ export class GameSession {
       const penaltyBlocks = Math.max(0, this.level.toNumber() - 1)
       const { tower, removedBlocks } = this.tower.removeTopBlocks(penaltyBlocks)
 
-      const blockValue = 1
-      const fallingBlock = Block.create(blockValue)
+      const fallingBlock = Block.create()
       const newFallingBlocks = [
         ...this.fallingBlocks,
         ...removedBlocks,
         fallingBlock,
       ]
 
-      const newScore = this.score.subtract(penaltyBlocks * 10)
+      const newScore = this.score.subtract(penaltyBlocks)
 
       events.push({
         type: 'WRONG_ANSWER',

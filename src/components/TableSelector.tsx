@@ -1,7 +1,7 @@
 import { Box, Button, SimpleGrid, Text, VStack } from '@chakra-ui/react'
 import { useState } from 'react'
 import { GameMode, GameSettings } from '@/domain'
-import { t } from '@/presentation/translations.ts'
+import { useTranslation } from 'react-i18next'
 
 interface TableSelectorProps {
   mode: GameMode
@@ -14,6 +14,7 @@ export default function TableSelector({
   onStartGame,
   isGameRunning,
 }: TableSelectorProps) {
+  const { t } = useTranslation()
   const [selectedTables, setSelectedTables] = useState<number[]>([])
 
   const toggleTable = (table: number) => {

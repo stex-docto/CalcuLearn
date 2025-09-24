@@ -1,90 +1,12 @@
-import {Badge, Box, Button, Center, SimpleGrid, Text, VStack} from '@chakra-ui/react'
+import { Badge, Box, Button, SimpleGrid, Text, VStack } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import { useGameSession } from '@/presentation/hooks/useGameSession.ts'
-import {GrAchievement} from "react-icons/gr";
-import {t} from "@/presentation";
 
 const MotionButton = motion.create(Button)
 const MotionBox = motion.create(Box)
 
-function levelUpCongrats(currentLevel: number) {
-    return (
-        <MotionBox
-            position="absolute"
-            bg="yellow.400"
-            color="black"
-            px={8}
-            py={4}
-            borderRadius="xl"
-            fontSize="2xl"
-            fontWeight="bold"
-            textAlign="center"
-            border="3px solid"
-            borderColor="yellow.600"
-            initial={{
-                scale: 0,
-                rotate: 0,
-                opacity: 0,
-            }}
-            animate={{
-                scale: [0, 1, 0.8],
-                rotate: [0, 0, 0],
-                opacity: [0, 1, 1, 1, 0],
-            }}
-            transition={{
-                duration: 3,
-                times: [0, 0.3, 0.4, 0.8, 1],
-                ease: 'easeOut',
-            }}
-        >
-            <Center>
-                <GrAchievement/>
-                <Text fontSize="lg" pl={2}>
-                    {t('statsLevel')} {currentLevel}
-                </Text>
-                {Array.from({length: 20}).map((_, i) => (
-                    <MotionBox
-                        position="absolute"
-                        key={`confetti-${i}`}
-                        width="8px"
-                        height="8px"
-                        bg={
-                            [
-                                'yellow.400',
-                                'orange.400',
-                                'red.400',
-                                'blue.400',
-                                'green.400',
-                            ][i % 5]
-                        }
-                        borderRadius="full"
-                        initial={{
-                            scale: 0,
-                            x: 0,
-                            y: 0,
-                            opacity: 1,
-                        }}
-                        animate={{
-                            scale: [0, 1, 0],
-                            x: (Math.random() - 0.5) * 400,
-                            y: (Math.random() - 0.5) * 300,
-                            opacity: [0, 1, 0],
-                        }}
-                        transition={{
-                            duration: 2 + Math.random(),
-                            delay: Math.random() * 0.5,
-                            ease: 'easeOut',
-                        }}
-                    />
-                ))}
-            </Center>
-        </MotionBox>
-    )
-}
-
-
 export default function ProblemDisplay() {
-  const { gameState, answerProblem,  } = useGameSession()
+  const { gameState, answerProblem } = useGameSession()
   const problem = gameState.currentProblem
   if (!gameState.isGameRunning || problem.isEmpty) {
     return <></>
@@ -106,10 +28,6 @@ export default function ProblemDisplay() {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
     >
-        {gameState.showLevelUp? levelUpCongrats(gameState.level): (
-
-
-
       <VStack gap={{ base: 3, md: 4 }}>
         <Box textAlign="center">
           <Badge
@@ -151,7 +69,6 @@ export default function ProblemDisplay() {
           ))}
         </SimpleGrid>
       </VStack>
-        )}
     </MotionBox>
   )
 }

@@ -1,9 +1,9 @@
-import { Box, VStack, Button, HStack } from '@chakra-ui/react'
+import { Box, Button, HStack, VStack } from '@chakra-ui/react'
 import { FaPlus, FaTimes } from 'react-icons/fa'
-import { useState, useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { GameMode, GameSettings } from '@/domain'
-import { t } from '@/presentation'
 import TableSelector from './TableSelector'
+import { useTranslation } from 'react-i18next'
 
 interface ModeSelectorProps {
   onStartGame: (gameSettings: GameSettings) => void
@@ -17,7 +17,7 @@ export default function ModeSelector({
   onUpdateGameSettings,
 }: ModeSelectorProps) {
   const [selectedMode, setSelectedMode] = useState<GameMode>(GameMode.ADDITION)
-
+  const { t } = useTranslation()
   const handleModeChange = useCallback(
     (newMode: GameMode) => {
       setSelectedMode(newMode)
