@@ -22,8 +22,19 @@ export class Tower {
 
   removeTopBlocks(count: number): { tower: Tower; removedBlocks: Block[] } {
     const blocksToRemove = Math.min(count, this.blocks.length)
+
+    if (blocksToRemove === 0) {
+      return {
+        tower: new Tower(this.blocks),
+        removedBlocks: [],
+      }
+    }
+
     const removedBlocks = this.blocks.slice(-blocksToRemove)
-    const remainingBlocks = this.blocks.slice(0, -blocksToRemove)
+    const remainingBlocks =
+      blocksToRemove === this.blocks.length
+        ? []
+        : this.blocks.slice(0, -blocksToRemove)
 
     return {
       tower: new Tower(remainingBlocks),

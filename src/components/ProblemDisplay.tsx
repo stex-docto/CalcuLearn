@@ -1,19 +1,92 @@
-import { Badge, Box, Button, SimpleGrid, Text, VStack } from '@chakra-ui/react'
+import {
+  Badge,
+  Box,
+  Button,
+  ButtonProps,
+  SimpleGrid,
+  Text,
+  VStack,
+} from '@chakra-ui/react'
 import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
 import { useGameSession } from '@/presentation/hooks/useGameSession.ts'
 
-const MotionButton = motion.create(Button)
 const MotionBox = motion.create(Box)
 
 export default function ProblemDisplay() {
   const { gameState, answerProblem } = useGameSession()
   const problem = gameState.currentProblem
+  const [feedbackState, setFeedbackState] = useState<{
+    selectedAnswer: number | null
+    isCorrect: boolean | null
+    showFeedback: boolean
+  }>({
+    selectedAnswer: null,
+    isCorrect: null,
+    showFeedback: false,
+  })
+
+  // Reset feedback when problem changes
+  useEffect(() => {
+    setFeedbackState({
+      selectedAnswer: null,
+      isCorrect: null,
+      showFeedback: false,
+    })
+  }, [problem.id])
+
   if (!gameState.isGameRunning || problem.isEmpty) {
     return <></>
   }
 
   const getModeColor = (operation: string) => {
     return operation === 'addition' ? 'blue' : 'purple'
+  }
+
+  const handleAnswerClick = async (option: number) => {
+    if (feedbackState.showFeedback) return
+
+    const isCorrect = option === problem.answer
+
+    // Show feedback immediately
+    setFeedbackState({
+      selectedAnswer: option,
+      isCorrect,
+      showFeedback: true,
+    })
+
+    // Wait a bit for visual feedback, then proceed with game logic
+    setTimeout(() => {
+      answerProblem(option)
+    }, 800)
+  }
+
+  const getButtonStyles = (option: number): Partial<ButtonProps> => {
+    if (!feedbackState.showFeedback) {
+      return {
+        variant: 'outline',
+      }
+    }
+    if (option === feedbackState.selectedAnswer) {
+      return {
+        colorPalette: feedbackState.isCorrect ? 'green' : 'red',
+        variant: 'solid',
+        borderWidth: '4px',
+      }
+    }
+
+    if (option === problem.answer && !feedbackState.isCorrect) {
+      return {
+        colorPalette: 'green',
+        variant: 'solid',
+        borderWidth: '4px',
+      }
+    }
+
+    // Wrong answers (not selected and not the correct answer)
+    return {
+      variant: 'ghost',
+    }
   }
 
   return (
@@ -24,8 +97,7 @@ export default function ProblemDisplay() {
       border="2px solid"
       borderColor="border.emphasized"
       shadow="md"
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
+      animate={{ scale: 1 }}
       transition={{ duration: 0.3 }}
     >
       <VStack gap={{ base: 3, md: 4 }}>
@@ -49,23 +121,20 @@ export default function ProblemDisplay() {
 
         <SimpleGrid columns={2} gap={{ base: 2, md: 3 }} width="100%">
           {problem.options.map((option: number, index: number) => (
-            <MotionButton
+            <Button
               key={`${problem.id}-${option}-${index}`}
-              size={{ base: 'md', md: 'lg' }}
-              variant="outline"
-              colorScheme="blue"
-              fontSize={{ base: 'md', md: 'lg' }}
+              size="2xl"
+              fontSize="2xl"
+              fontWeight={800}
+              colorPalette="gray"
               py={{ base: 3, md: 4 }}
-              onClick={() => answerProblem(option)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              _hover={{
-                bg: 'colorPalette.50',
-                borderColor: 'colorPalette.400',
-              }}
+              onClick={() =>
+                !feedbackState.showFeedback && handleAnswerClick(option)
+              }
+              {...getButtonStyles(option)}
             >
               {option}
-            </MotionButton>
+            </Button>
           ))}
         </SimpleGrid>
       </VStack>

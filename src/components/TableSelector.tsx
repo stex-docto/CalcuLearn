@@ -21,7 +21,7 @@ export default function TableSelector({
     setSelectedTables((prev) =>
       prev.includes(table)
         ? prev.filter((t) => t !== table)
-        : [...prev, table].sort()
+        : [...prev, table].sort((a, b) => a - b)
     )
   }
 

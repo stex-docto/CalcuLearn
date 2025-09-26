@@ -24,7 +24,7 @@ export class TableSelection {
   }
 
   getTables(): number[] {
-    return Array.from(this.tables).sort()
+    return Array.from(this.tables).sort((a, b) => a - b)
   }
 
   includes(table: number): boolean {
