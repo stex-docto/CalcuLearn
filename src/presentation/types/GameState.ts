@@ -6,6 +6,7 @@ export interface GameState {
     x: number
     y: number
     color: string
+    blockIndex: number
   }>
   currentProblem: {
     id: string
@@ -24,6 +25,7 @@ export interface GameState {
     x: number
     y: number
     color: string
+    blockIndex: number
   }>
   mode: GameMode
   showLevelUp: boolean

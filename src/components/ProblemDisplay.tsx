@@ -9,6 +9,7 @@ import {
 } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
 import { useGameSession } from '@/presentation/hooks/useGameSession.ts'
+import LevelUpModal from '@components/LevelUpModal.tsx'
 
 export default function ProblemDisplay() {
   const { gameState, answerProblem } = useGameSession()
@@ -89,8 +90,12 @@ export default function ProblemDisplay() {
     }
   }
 
+  if (gameState.showLevelUp) {
+    return <LevelUpModal />
+  }
+
   return (
-    <VStack gap={{ base: 3, md: 4 }}>
+    <VStack gap={{ base: 3, md: 4 }} position="relative">
       <Box textAlign="center">
         <Badge
           colorScheme={getModeColor(problem.operation)}

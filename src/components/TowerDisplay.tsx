@@ -1,6 +1,7 @@
 import { Box } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import type { GameState } from '@/presentation/types/GameState'
+import TowerBlock from './TowerBlock'
 
 type BlockData = GameState['tower'][0]
 
@@ -18,14 +19,20 @@ export default function TowerDisplay({
   tower,
   fallingBlocks,
 }: TowerDisplayProps) {
+  const baseUrl = import.meta.env.BASE_URL || '/'
+  const backgroundUrl = `url('${baseUrl}background.jpg')`
+
   return (
     <Box
-      width={{ base: '400px', md: '500px' }}
-      height={{ base: '400px', md: '500px' }}
-      overflow="hidden"
+      width="100%"
+      minWidth="200px"
+      flex={1}
+      height="500px"
       colorPalette="blue"
-      backgroundImage="url('/background.jpg')"
-      backgroundSize={{ base: '400px 400px', md: '500px 500px' }}
+      backgroundImage={backgroundUrl}
+      backgroundPosition="center"
+      backgroundRepeat="no-repeat"
+      backgroundSize="500px 500px"
     >
       <MotionBox
         width="100%"
@@ -45,18 +52,6 @@ export default function TowerDisplay({
             <MotionBox
               key={block.id}
               position="absolute"
-              width={`${BLOCK_WIDTH}px`}
-              height={`${BLOCK_HEIGHT}px`}
-              bg={block.color}
-              border="2px solid"
-              borderColor="border.muted"
-              borderRadius="md"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              fontSize="sm"
-              fontWeight="bold"
-              color="fg.emphasized"
               bottom={`${finalBottomPosition}px`}
               left="50%"
               transform="translateX(-50%)"
@@ -77,8 +72,13 @@ export default function TowerDisplay({
                 duration: 0.8,
                 delay: visibleIndex * 0.1,
               }}
-              whileHover={{ scale: 1.05 }}
-            />
+            >
+              <TowerBlock
+                blockIndex={block.blockIndex}
+                width={BLOCK_WIDTH}
+                height={BLOCK_HEIGHT}
+              />
+            </MotionBox>
           )
         })}
 
@@ -87,18 +87,6 @@ export default function TowerDisplay({
           <MotionBox
             key={`falling-${block.id}`}
             position="absolute"
-            width={`${BLOCK_WIDTH}px`}
-            height={`${BLOCK_HEIGHT}px`}
-            bg={block.color}
-            border="2px solid"
-            borderColor="border.muted"
-            borderRadius="md"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            fontSize="sm"
-            fontWeight="bold"
-            color="fg.emphasized"
             top={`${CRANE_DROP_POSITION}px`}
             left="50%"
             transform="translateX(-50%)"
@@ -119,7 +107,13 @@ export default function TowerDisplay({
               ease: 'easeIn',
               times: [0, 0.3, 1],
             }}
-          />
+          >
+            <TowerBlock
+              blockIndex={block.blockIndex}
+              width={BLOCK_WIDTH}
+              height={BLOCK_HEIGHT}
+            />
+          </MotionBox>
         ))}
       </MotionBox>
     </Box>

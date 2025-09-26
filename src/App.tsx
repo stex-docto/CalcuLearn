@@ -8,7 +8,6 @@ import { useGameSession } from '@/presentation/hooks/useGameSession.ts'
 import { UI_Provider } from '@/presentation'
 import { GameSessionProvider } from '@/presentation/providers/GameSessionProvider'
 import '@/i18n'
-import LevelUpModal from '@components/LevelUpModal.tsx'
 
 function AppContent() {
   const { gameState, stopGame } = useGameSession()
@@ -51,7 +50,6 @@ function AppContent() {
           )}
         </VStack>
       </Container>
-      <LevelUpModal />
       <Footer />
     </Flex>
   )

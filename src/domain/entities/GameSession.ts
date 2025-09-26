@@ -73,7 +73,8 @@ export class GameSession {
     const isCorrect = this.currentProblem.isCorrectAnswer(selectedAnswer)
 
     if (isCorrect) {
-      const newBlock = Block.create()
+      const currentTowerHeight = this.tower.getHeight().toNumber()
+      const newBlock = Block.create(currentTowerHeight) // 0-9 for l1-l10 images
       const { tower, isComplete } = this.tower.addBlock(newBlock)
 
       let newScore = this.score.add(1)

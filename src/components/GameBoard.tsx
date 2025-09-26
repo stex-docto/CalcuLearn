@@ -67,23 +67,21 @@ export default function GameBoard() {
   }
 
   return (
-    <VStack gap={{ base: 3, md: 4 }} align="center">
-      <Box
-        bg="bg.subtle"
-        borderRadius="lg"
-        border="2px solid"
-        borderColor="border.muted"
-        overflow="hidden"
-        position="relative"
-      >
-        <HStack align="start">
-          <CompactHighScores />
-          <TowerDisplay
-            tower={gameState.tower}
-            fallingBlocks={gameState.fallingBlocks}
-          />
-        </HStack>
-      </Box>
-    </VStack>
+    <HStack
+      align="stretch"
+      justify="stretch"
+      bg="bg.subtle"
+      border="2px solid"
+      borderColor="border.muted"
+      overflow="hidden"
+      position="relative"
+      borderRadius="lg"
+    >
+      <CompactHighScores />
+      <TowerDisplay
+        tower={gameState.tower}
+        fallingBlocks={gameState.fallingBlocks}
+      />
+    </HStack>
   )
 }

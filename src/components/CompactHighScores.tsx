@@ -1,4 +1,4 @@
-import { Box, Timeline } from '@chakra-ui/react'
+import { Badge, HStack, Text, VStack } from '@chakra-ui/react'
 import { useGameSession } from '@/presentation/hooks/useGameSession.ts'
 import { useHighScores } from '@/presentation/hooks/useHighScores.ts'
 import { FaLongArrowAltLeft } from 'react-icons/fa'
@@ -8,22 +8,16 @@ const getScoreBlock = (
   rank: number,
   isCurrent: boolean
 ) => (
-  <Timeline.Item key={score.id}>
-    <Timeline.Connector>
-      <Timeline.Separator />
-      <Timeline.Indicator
-        colorPalette={isCurrent ? 'blue' : rank === 1 ? 'yellow' : 'gray'}
-      >
-        {rank}
-      </Timeline.Indicator>
-    </Timeline.Connector>
-    <Timeline.Content paddingBottom={4}>
-      <Timeline.Title>
-        {score.score.toLocaleString()}{' '}
-        {isCurrent && <FaLongArrowAltLeft color="currentColor" />}
-      </Timeline.Title>
-    </Timeline.Content>
-  </Timeline.Item>
+  <HStack key={score.id}>
+    <Badge
+      width="30px"
+      colorPalette={isCurrent ? 'blue' : rank === 1 ? 'yellow' : 'gray'}
+    >
+      #{rank}
+    </Badge>
+    <Text> {score.score.toLocaleString()}</Text>
+    {isCurrent && <FaLongArrowAltLeft color="currentColor" />}
+  </HStack>
 )
 
 export default function CompactHighScores() {
@@ -35,19 +29,17 @@ export default function CompactHighScores() {
 
   // Sort all scores and take top 10, but mark which one is current
   return (
-    <Box width="100px" p={4}>
-      <Timeline.Root variant="subtle">
-        {scores.map((score, index) =>
-          getScoreBlock(score, index + 1, score.id == gameState.id)
-        )}
+    <VStack gap={2} p={2} align="start">
+      {scores.map((score, index) =>
+        getScoreBlock(score, index + 1, score.id == gameState.id)
+      )}
 
-        {!currentHighScore &&
-          getScoreBlock(
-            { id: gameState.id, score: gameState.score },
-            scores.length + 1,
-            true
-          )}
-      </Timeline.Root>
-    </Box>
+      {!currentHighScore &&
+        getScoreBlock(
+          { id: gameState.id, score: gameState.score },
+          scores.length + 1,
+          true
+        )}
+    </VStack>
   )
 }
