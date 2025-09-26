@@ -2,7 +2,7 @@ export class ProblemId {
   constructor(private readonly value: string) {}
 
   static generate(): ProblemId {
-    return new ProblemId(Math.random().toString(36).substr(2, 9))
+    return new ProblemId(crypto.randomUUID())
   }
 
   static empty(): ProblemId {

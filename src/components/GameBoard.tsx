@@ -11,7 +11,7 @@ export default function GameBoard() {
   const { t } = useTranslation()
   const { gameState, startGame, updateGameSettings } = useGameSession()
 
-  if (!gameState.isGameRunning && gameState.tower.length === 0) {
+  if (!gameState.isGameRunning) {
     return (
       <VStack
         gap={{ base: 4, md: 6 }}

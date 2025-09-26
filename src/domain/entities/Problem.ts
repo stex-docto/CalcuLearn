@@ -1,5 +1,7 @@
 import {
   Answer,
+  GameMode,
+  GameSettings,
   Operation,
   Options,
   ProblemId,
@@ -43,6 +45,72 @@ export class Problem {
       null,
       Operation.create(operation)
     )
+  }
+
+  static generate(gameSettings: GameSettings): Problem {
+    const mode = gameSettings.mode
+    const tableSelection = gameSettings.tableSelection
+
+    if (mode === GameMode.ADDITION) {
+      return this.generateAddition(tableSelection)
+    } else {
+      return this.generateMultiplication(tableSelection)
+    }
+  }
+
+  private static generateAddition(tableSelection: TableSelection): Problem {
+    const num1 = tableSelection.getRandomTable()
+    const num2 = Math.floor(Math.random() * 9) + 1
+
+    const answer = num1 + num2
+    const wrongAnswers = [
+      answer + Math.floor(Math.random() * 10) + 1,
+      answer - Math.floor(Math.random() * 10) - 1,
+      answer + Math.floor(Math.random() * 20) + 5,
+    ]
+
+    const options = this.shuffleArray([answer, ...wrongAnswers])
+
+    return Problem.create(
+      `${num1} + ${num2} = ?`,
+      answer,
+      options,
+      'addition',
+      tableSelection
+    )
+  }
+
+  private static generateMultiplication(
+    tableSelection: TableSelection
+  ): Problem {
+    const num1 = tableSelection.getRandomTable()
+    const num2 = Math.floor(Math.random() * 9) + 1
+
+    const answer = num1 * num2
+    const wrongAnswers = [
+      answer + Math.floor(Math.random() * 15) + 1,
+      answer - Math.floor(Math.random() * 15) - 1,
+      answer + Math.floor(Math.random() * 25) + 5,
+    ]
+
+    const options = this.shuffleArray([answer, ...wrongAnswers])
+
+    return Problem.create(
+      `${num1} × ${num2} = ?`,
+      answer,
+      options,
+      'multiplication',
+      tableSelection
+    )
+  }
+
+  private static shuffleArray<T>(array: T[]): T[] {
+    const newArray = [...array]
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[newArray[i], newArray[j]] = [newArray[j], newArray[i]]
+    }
+    return newArray
   }
 
   isCorrectAnswer(selectedAnswer: number): boolean {

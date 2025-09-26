@@ -5,19 +5,19 @@ import { diContainer } from '@/infrastructure'
 
 export function useHighScores(mode: GameMode) {
   const [scores, setScores] = useState<HighScore[]>([])
-  const gameService = diContainer.getGameApplicationService()
+  const { manageHighScoresUseCase } = diContainer.getUseCases()
 
   const loadScores = useCallback(() => {
-    const highScores = gameService.getHighScores(mode)
+    const highScores = manageHighScoresUseCase.getHighScores(mode)
     setScores(highScores)
-  }, [gameService, mode])
+  }, [manageHighScoresUseCase, mode])
 
   const addScore = useCallback(
     (score: HighScore) => {
-      gameService.addHighScore(score)
+      manageHighScoresUseCase.addScore(score)
       loadScores()
     },
-    [gameService, loadScores]
+    [manageHighScoresUseCase, loadScores]
   )
 
   // Load scores when mode changes

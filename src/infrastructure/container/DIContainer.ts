@@ -1,19 +1,19 @@
-// Infrastructure adapters
-import { ProblemGeneratorAdapter } from '../adapters/ProblemGeneratorAdapter'
-import { LocalStorageHighScoreAdapter } from '../adapters/LocalStorageHighScoreAdapter'
-
-// Use cases
-import { StartGameUseCase } from '../../application/use-cases/StartGameUseCase'
-import { AnswerProblemUseCase } from '../../application/use-cases/AnswerProblemUseCase'
-import { GenerateProblemUseCase } from '../../application/use-cases/GenerateProblemUseCase'
-import { ManageHighScoresUseCase } from '../../application/use-cases/ManageHighScoresUseCase'
-
-// Application service
-import { GameApplicationService } from '../../application/services/GameApplicationService'
+import { LocalStorageHighScoreAdapter } from '@/infrastructure'
+import {
+  AnswerProblemUseCase,
+  GenerateProblemUseCase,
+  ManageHighScoresUseCase,
+  StartGameUseCase,
+} from '@/application'
 
 class DIContainer {
   private static instance: DIContainer
-  private gameApplicationService: GameApplicationService | null = null
+  private useCases: {
+    startGameUseCase: StartGameUseCase
+    answerProblemUseCase: AnswerProblemUseCase
+    generateProblemUseCase: GenerateProblemUseCase
+    manageHighScoresUseCase: ManageHighScoresUseCase
+  } | null = null
 
   private constructor() {}
 
@@ -24,32 +24,33 @@ class DIContainer {
     return DIContainer.instance
   }
 
-  getGameApplicationService(): GameApplicationService {
-    if (!this.gameApplicationService) {
+  getUseCases(): {
+    startGameUseCase: StartGameUseCase
+    answerProblemUseCase: AnswerProblemUseCase
+    generateProblemUseCase: GenerateProblemUseCase
+    manageHighScoresUseCase: ManageHighScoresUseCase
+  } {
+    if (!this.useCases) {
       // Create adapters
-      const problemGeneratorAdapter = new ProblemGeneratorAdapter()
       const highScoreRepositoryAdapter = new LocalStorageHighScoreAdapter()
 
       // Create use cases
       const startGameUseCase = new StartGameUseCase(highScoreRepositoryAdapter)
       const answerProblemUseCase = new AnswerProblemUseCase()
-      const generateProblemUseCase = new GenerateProblemUseCase(
-        problemGeneratorAdapter
-      )
+      const generateProblemUseCase = new GenerateProblemUseCase()
       const manageHighScoresUseCase = new ManageHighScoresUseCase(
         highScoreRepositoryAdapter
       )
 
-      // Create application service
-      this.gameApplicationService = new GameApplicationService(
+      this.useCases = {
         startGameUseCase,
         answerProblemUseCase,
         generateProblemUseCase,
-        manageHighScoresUseCase
-      )
+        manageHighScoresUseCase,
+      }
     }
 
-    return this.gameApplicationService
+    return this.useCases
   }
 }
 

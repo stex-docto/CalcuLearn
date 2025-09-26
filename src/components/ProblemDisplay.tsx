@@ -7,11 +7,8 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react'
-import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { useGameSession } from '@/presentation/hooks/useGameSession.ts'
-
-const MotionBox = motion.create(Box)
 
 export default function ProblemDisplay() {
   const { gameState, answerProblem } = useGameSession()
@@ -48,6 +45,9 @@ export default function ProblemDisplay() {
 
     const isCorrect = option === problem.answer
 
+    // Process answer immediately to update blocks/score
+    const { generateNextProblem } = answerProblem(option)
+
     // Show feedback immediately
     setFeedbackState({
       selectedAnswer: option,
@@ -55,9 +55,9 @@ export default function ProblemDisplay() {
       showFeedback: true,
     })
 
-    // Wait a bit for visual feedback, then proceed with game logic
+    // Wait for visual feedback, then generate next problem
     setTimeout(() => {
-      answerProblem(option)
+      generateNextProblem()
     }, 800)
   }
 
@@ -90,54 +90,43 @@ export default function ProblemDisplay() {
   }
 
   return (
-    <MotionBox
-      bg="bg"
-      p={{ base: 4, md: 6 }}
-      borderRadius="lg"
-      border="2px solid"
-      borderColor="border.emphasized"
-      shadow="md"
-      animate={{ scale: 1 }}
-      transition={{ duration: 0.3 }}
-    >
-      <VStack gap={{ base: 3, md: 4 }}>
-        <Box textAlign="center">
-          <Badge
-            colorScheme={getModeColor(problem.operation)}
-            mb={{ base: 1, md: 2 }}
-            textTransform="capitalize"
-            fontSize={{ base: 'xs', md: 'sm' }}
-          >
-            {problem.operation} - Tables {problem.tables.join(', ')}
-          </Badge>
-          <Text
-            fontSize={{ base: 'xl', md: '2xl' }}
-            fontWeight="bold"
-            color="fg.emphasized"
-          >
-            {problem.question}
-          </Text>
-        </Box>
+    <VStack gap={{ base: 3, md: 4 }}>
+      <Box textAlign="center">
+        <Badge
+          colorScheme={getModeColor(problem.operation)}
+          mb={{ base: 1, md: 2 }}
+          textTransform="capitalize"
+          fontSize={{ base: 'xs', md: 'sm' }}
+        >
+          {problem.operation} - Tables {problem.tables.join(', ')}
+        </Badge>
+        <Text
+          fontSize={{ base: 'xl', md: '2xl' }}
+          fontWeight="bold"
+          color="fg.emphasized"
+        >
+          {problem.question}
+        </Text>
+      </Box>
 
-        <SimpleGrid columns={2} gap={{ base: 2, md: 3 }} width="100%">
-          {problem.options.map((option: number, index: number) => (
-            <Button
-              key={`${problem.id}-${option}-${index}`}
-              size="2xl"
-              fontSize="2xl"
-              fontWeight={800}
-              colorPalette="gray"
-              py={{ base: 3, md: 4 }}
-              onClick={() =>
-                !feedbackState.showFeedback && handleAnswerClick(option)
-              }
-              {...getButtonStyles(option)}
-            >
-              {option}
-            </Button>
-          ))}
-        </SimpleGrid>
-      </VStack>
-    </MotionBox>
+      <SimpleGrid columns={2} gap={{ base: 2, md: 3 }} width="100%">
+        {problem.options.map((option: number, index: number) => (
+          <Button
+            key={`${problem.id}-${option}-${index}`}
+            size="2xl"
+            fontSize="2xl"
+            fontWeight={800}
+            colorPalette="gray"
+            py={{ base: 3, md: 4 }}
+            onClick={() =>
+              !feedbackState.showFeedback && handleAnswerClick(option)
+            }
+            {...getButtonStyles(option)}
+          >
+            {option}
+          </Button>
+        ))}
+      </SimpleGrid>
+    </VStack>
   )
 }

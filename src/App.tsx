@@ -1,5 +1,4 @@
 import { Box, Container, Flex, VStack } from '@chakra-ui/react'
-import { useCallback } from 'react'
 import GameBoard from '@/components/GameBoard'
 import ProblemDisplay from '@/components/ProblemDisplay'
 import HighScores from '@/components/HighScores'
@@ -14,14 +13,9 @@ import LevelUpModal from '@components/LevelUpModal.tsx'
 function AppContent() {
   const { gameState, stopGame } = useGameSession()
 
-  const goHome = useCallback(() => {
-    // Stop the current game - scores are already saved live
-    stopGame()
-  }, [stopGame])
-
   return (
     <Flex direction="column" minH="100vh">
-      <Header onGoHome={goHome} />
+      <Header onGoHome={stopGame} />
 
       <Container maxW="container.xl" py={8} as="main" flex="1">
         <VStack gap={8} align="stretch">

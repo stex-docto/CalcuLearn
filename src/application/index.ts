@@ -1,5 +1,4 @@
 // Ports
-export type { ProblemGeneratorPort } from './ports/ProblemGeneratorPort'
 export type {
   HighScoreRepositoryPort,
   HighScore,
@@ -13,6 +12,3 @@ export {
 } from './use-cases/AnswerProblemUseCase'
 export { GenerateProblemUseCase } from './use-cases/GenerateProblemUseCase'
 export { ManageHighScoresUseCase } from './use-cases/ManageHighScoresUseCase'
-
-// Services
-export { GameApplicationService } from './services/GameApplicationService'

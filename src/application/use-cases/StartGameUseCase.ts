@@ -1,4 +1,4 @@
-import { GameSession, GameSettings } from '@/domain'
+import { GameSession, GameSettings, GameStatus } from '@/domain'
 import { HighScore, HighScoreRepositoryPort } from '@/application'
 
 export class StartGameUseCase {
@@ -10,15 +10,15 @@ export class StartGameUseCase {
   ): GameSession {
     // Save current session score if it's running and has a score
     if (
-      currentSession.getStatus().isRunning() &&
-      !currentSession.getScore().isZero()
+      currentSession.status === GameStatus.RUNNING &&
+      !currentSession.score.isZero()
     ) {
       const score: HighScore = {
-        id: Date.now().toString(),
-        score: currentSession.getScore().toNumber(),
+        id: currentSession.id,
+        score: currentSession.score.toNumber(),
         date: new Date().toISOString(),
-        level: currentSession.getLevel().toNumber(),
-        mode: currentSession.getMode(),
+        level: currentSession.level.toNumber(),
+        mode: currentSession.gameSettings.mode,
       }
       this.highScoreRepository.addScore(score)
     }

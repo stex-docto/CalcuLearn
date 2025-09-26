@@ -1,38 +1,36 @@
-import { Badge, Box, HStack, Text, VStack } from '@chakra-ui/react'
-import { FaPlay } from 'react-icons/fa'
-import { useHighScores } from '@/presentation/hooks/useHighScores.ts'
+import { Box, Timeline } from '@chakra-ui/react'
+import { HighScore } from '@/application'
 import { useGameSession } from '@/presentation/hooks/useGameSession.ts'
+import { useHighScores } from '@/presentation/hooks/useHighScores.ts'
+import { FaLongArrowAltLeft } from 'react-icons/fa'
+
+const getScoreBlock = (score: HighScore, rank: number, isCurrent: boolean) => (
+  <Timeline.Item key={score.id}>
+    <Timeline.Connector>
+      <Timeline.Separator />
+      <Timeline.Indicator
+        colorPalette={isCurrent ? 'blue' : rank === 1 ? 'yellow' : 'gray'}
+      >
+        {rank}
+      </Timeline.Indicator>
+    </Timeline.Connector>
+    <Timeline.Content paddingBottom={4}>
+      <Timeline.Title>
+        {score.score.toLocaleString()}{' '}
+        {isCurrent && <FaLongArrowAltLeft color="currentColor" />}
+      </Timeline.Title>
+    </Timeline.Content>
+  </Timeline.Item>
+)
 
 export default function CompactHighScores() {
-  const { gameState, currentGameScoreId } = useGameSession()
+  const { gameState, asHighScore } = useGameSession()
   const { scores } = useHighScores(gameState.mode)
 
-  // Create a combined list with the current game score positioned correctly
-  const allScores = [...scores]
-
-  // Add current game score if it's not already in the list
-  const currentGameExists =
-    currentGameScoreId && scores.some((s) => s.id === currentGameScoreId)
-  if (!currentGameExists && gameState.score > 0) {
-    allScores.push({
-      id: 'current-temp',
-      score: gameState.score,
-      level: gameState.level,
-      mode: gameState.mode,
-      date: new Date().toISOString(),
-    })
-  }
-
+  // Add current game score if it's not already in the list and game is running
+  const currentHighScore = scores.some((s) => s.id === gameState.id)
+  console.log(scores)
   // Sort all scores and take top 10, but mark which one is current
-  const sortedScores = allScores
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 10)
-    .map((score, index) => ({
-      ...score,
-      rank: index + 1,
-      isCurrent: score.id === currentGameScoreId || score.id === 'current-temp',
-    }))
-
   return (
     <Box
       bg="bg.subtle"
@@ -44,46 +42,14 @@ export default function CompactHighScores() {
       maxH="400px"
       overflow="hidden"
     >
-      <VStack gap={1} align="start">
-        {sortedScores.map((score) => (
-          <HStack
-            key={score.id}
-            justify="space-between"
-            py={1}
-            px={2}
-            borderRadius="sm"
-            bg={score.isCurrent ? 'colorPalette.100' : 'transparent'}
-            border={score.isCurrent ? '2px solid' : '1px solid transparent'}
-            borderColor={score.isCurrent ? 'colorPalette.400' : 'transparent'}
-            transition="all 0.2s"
-          >
-            <HStack gap={2}>
-              {score.isCurrent && <FaPlay size={8} color="currentColor" />}
-              <Badge
-                colorPalette={score.rank === 1 ? 'yellow' : 'gray'}
-                variant={score.rank <= 3 ? 'solid' : 'outline'}
-                fontSize="xs"
-                px={1}
-              >
-                #{score.rank}
-              </Badge>
-            </HStack>
+      <Timeline.Root variant="subtle">
+        {scores.map((score, index) =>
+          getScoreBlock(score, index + 1, score.id == gameState.id)
+        )}
 
-            <Text
-              fontSize="sm"
-              fontWeight={score.isCurrent ? 'bold' : 'normal'}
-            >
-              {score.score.toLocaleString()}
-            </Text>
-          </HStack>
-        ))}
-      </VStack>
-
-      {gameState.score === 0 && (
-        <Text color="fg.subtle" fontSize="xs" textAlign="center" mt={4}>
-          Start playing to see your score!
-        </Text>
-      )}
+        {!currentHighScore &&
+          getScoreBlock(asHighScore, scores.length + 12, true)}
+      </Timeline.Root>
     </Box>
   )
 }

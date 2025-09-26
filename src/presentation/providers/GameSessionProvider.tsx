@@ -5,6 +5,7 @@ import {
   GameSessionContext,
   GameSessionContextValue,
 } from './GameSessionContext'
+import { fromGameSession } from '@/application/ports/HighScoreRepositoryPort.ts'
 
 interface GameSessionProviderProps {
   children: ReactNode
@@ -16,63 +17,66 @@ export function GameSessionProvider({ children }: GameSessionProviderProps) {
   )
   const currentScoreRef = useRef<string | null>(null)
 
-  const gameService = diContainer.getGameApplicationService()
-  const highScoreService = diContainer.getGameApplicationService()
+  const {
+    startGameUseCase,
+    answerProblemUseCase,
+    generateProblemUseCase,
+    manageHighScoresUseCase,
+  } = diContainer.getUseCases()
 
   const startGame = useCallback(
     (gameSettings: GameSettings) => {
-      const newSession = gameService.startGame(session, gameSettings)
-      setSession(newSession)
+      const newSession = startGameUseCase.execute(session, gameSettings)
+      const sessionWithProblem = generateProblemUseCase.execute(newSession)
+      setSession(sessionWithProblem)
     },
-    [session, gameService]
+    [session, startGameUseCase, generateProblemUseCase]
   )
 
   const answerProblem = useCallback(
     (selectedAnswer: number) => {
-      const result = gameService.answerProblem(session, selectedAnswer)
+      const result = answerProblemUseCase.execute(session, selectedAnswer)
       setSession(result.session)
-      return result.events
+
+      return {
+        events: result.events,
+        generateNextProblem: () => {
+          const sessionWithProblem = generateProblemUseCase.execute(
+            result.session
+          )
+          setSession(sessionWithProblem)
+        },
+      }
     },
-    [session, gameService]
+    [session, answerProblemUseCase, generateProblemUseCase]
   )
 
   const stopGame = useCallback(() => {
-    const stoppedSession = gameService.stopGame(session)
+    const stoppedSession = session.stop()
     setSession(stoppedSession)
-  }, [session, gameService])
+  }, [session])
 
   const hideLevelUp = useCallback(() => {
-    const updatedSession = gameService.hideLevelUp(session)
+    const updatedSession = session.hideLevelUp()
     setSession(updatedSession)
-  }, [session, gameService])
+  }, [session])
 
   const updateFallingBlocks = useCallback(() => {
-    const cleanedSession = gameService.cleanupFallingBlocks(session)
+    const cleanedSession = session.cleanupFallingBlocks()
     setSession(cleanedSession)
-  }, [session, gameService])
+  }, [session])
 
   const updateGameSettings = useCallback(
     (gameSettings: GameSettings) => {
-      const updatedSession = gameService.updateGameSettings(
-        session,
-        gameSettings
-      )
+      const updatedSession = session.updateGameSettings(gameSettings)
       setSession(updatedSession)
     },
-    [session, gameService]
+    [session]
   )
-
-  // Auto-generate problems when needed
-  useEffect(() => {
-    if (session.needsProblem()) {
-      const sessionWithProblem = gameService.ensureProblemExists(session)
-      setSession(sessionWithProblem)
-    }
-  }, [session, gameService])
 
   // Auto-hide level up animation after 3 seconds
   useEffect(() => {
-    if (session.getShowLevelUp()) {
+    if (session.showLevelUp) {
       const timer = setTimeout(() => {
         hideLevelUp()
       }, 3000)
@@ -85,44 +89,24 @@ export function GameSessionProvider({ children }: GameSessionProviderProps) {
     const gameState = session.toPlainObject()
 
     if (gameState.isGameRunning && gameState.score > 0) {
-      if (!currentScoreRef.current) {
-        // Create new high score entry when game starts
-        const scoreId = Date.now().toString()
-        currentScoreRef.current = scoreId
-        highScoreService.addHighScore({
-          id: scoreId,
-          score: gameState.score,
-          date: new Date().toISOString(),
-          level: gameState.level,
-          mode: gameState.mode,
-        })
-      } else {
-        // Update existing high score entry with new score
-        highScoreService.addHighScore({
-          id: currentScoreRef.current,
-          score: gameState.score,
-          date: new Date().toISOString(),
-          level: gameState.level,
-          mode: gameState.mode,
-        })
-      }
+      manageHighScoresUseCase.addScore(fromGameSession(session))
     }
 
     // Clear the reference when game stops
     if (!gameState.isGameRunning) {
       currentScoreRef.current = null
     }
-  }, [session, highScoreService])
+  }, [session, manageHighScoresUseCase])
 
   const value: GameSessionContextValue = {
     gameState: session.toPlainObject(),
-    currentGameScoreId: currentScoreRef.current,
     startGame,
     answerProblem,
     stopGame,
     hideLevelUp,
     updateFallingBlocks,
     updateGameSettings,
+    asHighScore: fromGameSession(session),
   }
 
   return (

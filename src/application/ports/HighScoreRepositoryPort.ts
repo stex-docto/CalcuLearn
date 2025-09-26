@@ -1,4 +1,4 @@
-import { GameMode } from '@/domain'
+import { GameMode, GameSession } from '@/domain'
 
 export interface HighScore {
   id: string
@@ -14,4 +14,14 @@ export interface HighScoreRepositoryPort {
   addScore(score: HighScore): void
 
   clearScores(mode: GameMode): void
+}
+
+export function fromGameSession(session: GameSession) {
+  return {
+    id: session.id,
+    score: session.score.toNumber(),
+    date: new Date().toISOString(),
+    level: session.level.toNumber(),
+    mode: session.gameSettings.mode,
+  }
 }

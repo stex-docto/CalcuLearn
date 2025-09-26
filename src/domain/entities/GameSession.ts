@@ -1,62 +1,63 @@
 import { Tower } from './Tower'
-import {
-  GameMode,
-  GameSettings,
-  GameStatus,
-  Level,
-  Problem,
-  Score,
-} from '@/domain'
+import { GameSettings, GameStatus, Level, Problem, Score } from '@/domain'
 import { Block } from './Block'
 
 export class GameSession {
   constructor(
-    private readonly tower: Tower,
-    private readonly currentProblem: Problem,
-    private readonly score: Score,
-    private readonly level: Level,
-    private readonly status: GameStatus,
-    private readonly fallingBlocks: Block[],
-    private readonly gameSettings: GameSettings,
-    private readonly showLevelUp: boolean
+    public readonly id: string,
+    public readonly tower: Tower,
+    public readonly currentProblem: Problem,
+    public readonly score: Score,
+    public readonly level: Level,
+    public readonly status: GameStatus,
+    public readonly fallingBlocks: Block[],
+    public readonly gameSettings: GameSettings,
+    public readonly showLevelUp: boolean,
+    public readonly givenAnswer: number | null
   ) {}
 
   static create(gameSettings: GameSettings): GameSession {
     return new GameSession(
+      crypto.randomUUID(),
       Tower.empty(),
-      Problem.empty(gameSettings.getMode()),
+      Problem.empty(gameSettings.mode),
       Score.zero(),
       Level.initial(),
-      GameStatus.stopped(),
+      GameStatus.STOPPED,
       [],
       gameSettings,
-      false
+      false,
+      null
     )
   }
 
   start(): GameSession {
     return new GameSession(
+      crypto.randomUUID(),
       this.tower,
       this.currentProblem,
       this.score,
       this.level,
-      GameStatus.running(),
+      GameStatus.RUNNING,
       this.fallingBlocks,
       this.gameSettings,
-      false
+      false,
+      null
     )
   }
 
   stop(): GameSession {
     return new GameSession(
+      this.id,
       this.tower,
-      this.currentProblem,
+      Problem.empty(this.gameSettings.mode),
       this.score,
       this.level,
-      GameStatus.stopped(),
+      GameStatus.STOPPED,
       this.fallingBlocks,
       this.gameSettings,
-      false
+      false,
+      null
     )
   }
 
@@ -64,7 +65,7 @@ export class GameSession {
     session: GameSession
     events: GameEvent[]
   } {
-    if (!this.status.isRunning()) {
+    if (this.status !== GameStatus.RUNNING || this.givenAnswer !== null) {
       return { session: this, events: [] }
     }
 
@@ -91,14 +92,16 @@ export class GameSession {
 
       return {
         session: new GameSession(
+          this.id,
           tower,
-          Problem.empty(this.gameSettings.getMode()),
+          this.currentProblem,
           newScore,
           newLevel,
           this.status,
           this.fallingBlocks,
           this.gameSettings,
-          showLevelUp
+          showLevelUp,
+          selectedAnswer
         ),
         events,
       }
@@ -123,14 +126,16 @@ export class GameSession {
 
       return {
         session: new GameSession(
+          this.id,
           tower,
-          Problem.empty(this.gameSettings.getMode()),
+          this.currentProblem,
           newScore,
           this.level,
           this.status,
           newFallingBlocks,
           this.gameSettings,
-          false
+          false,
+          selectedAnswer
         ),
         events,
       }
@@ -139,6 +144,7 @@ export class GameSession {
 
   updateProblem(problem: Problem): GameSession {
     return new GameSession(
+      this.id,
       this.tower,
       problem,
       this.score,
@@ -146,12 +152,14 @@ export class GameSession {
       this.status,
       this.fallingBlocks,
       this.gameSettings,
-      this.showLevelUp
+      this.showLevelUp,
+      null
     )
   }
 
   hideLevelUp(): GameSession {
     return new GameSession(
+      this.id,
       this.tower,
       this.currentProblem,
       this.score,
@@ -159,20 +167,23 @@ export class GameSession {
       this.status,
       this.fallingBlocks,
       this.gameSettings,
-      false
+      false,
+      this.givenAnswer
     )
   }
 
   updateGameSettings(newGameSettings: GameSettings): GameSession {
     return new GameSession(
+      this.id,
       this.tower,
-      Problem.empty(newGameSettings.getMode()),
+      Problem.empty(newGameSettings.mode),
       this.score,
       this.level,
       this.status,
       this.fallingBlocks,
       newGameSettings,
-      this.showLevelUp
+      this.showLevelUp,
+      this.givenAnswer
     )
   }
 
@@ -181,6 +192,7 @@ export class GameSession {
       (block) => block.position.y > -500
     )
     return new GameSession(
+      this.id,
       this.tower,
       this.currentProblem,
       this.score,
@@ -188,53 +200,14 @@ export class GameSession {
       this.status,
       cleanedBlocks,
       this.gameSettings,
-      this.showLevelUp
+      this.showLevelUp,
+      this.givenAnswer
     )
-  }
-
-  needsProblem(): boolean {
-    return this.status.isRunning() && this.currentProblem.isEmpty()
-  }
-
-  // Getters
-  getTower(): Tower {
-    return this.tower
-  }
-
-  getCurrentProblem(): Problem {
-    return this.currentProblem
-  }
-
-  getScore(): Score {
-    return this.score
-  }
-
-  getLevel(): Level {
-    return this.level
-  }
-
-  getStatus(): GameStatus {
-    return this.status
-  }
-
-  getFallingBlocks(): Block[] {
-    return [...this.fallingBlocks]
-  }
-
-  getMode(): GameMode {
-    return this.gameSettings.getMode()
-  }
-
-  getGameSettings(): GameSettings {
-    return this.gameSettings
-  }
-
-  getShowLevelUp(): boolean {
-    return this.showLevelUp
   }
 
   toPlainObject() {
     return {
+      id: this.id,
       tower: this.tower.toPlainArray(),
       currentProblem: {
         ...this.currentProblem.toPlainObject(),
@@ -242,10 +215,10 @@ export class GameSession {
       },
       score: this.score.toNumber(),
       level: this.level.toNumber(),
-      isGameRunning: this.status.isRunning(),
+      isGameRunning: this.status === GameStatus.RUNNING,
       fallingBlocks: this.fallingBlocks.map((block) => block.toPlainObject()),
-      mode: this.gameSettings.getMode(),
-      tables: this.gameSettings.getTables(),
+      mode: this.gameSettings.mode,
+      tables: this.gameSettings.tableSelection.getTables(),
       showLevelUp: this.showLevelUp,
     }
   }
