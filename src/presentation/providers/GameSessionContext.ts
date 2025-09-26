@@ -1,6 +1,5 @@
 import { createContext } from 'react'
 import { GameSession, GameSettings, GameEvent } from '@/domain'
-import { HighScore } from '@/application'
 
 export interface GameSessionContextValue {
   gameState: ReturnType<GameSession['toPlainObject']>
@@ -13,7 +12,6 @@ export interface GameSessionContextValue {
   hideLevelUp: () => void
   updateFallingBlocks: () => void
   updateGameSettings: (gameSettings: GameSettings) => void
-  asHighScore: HighScore
 }
 
 export const GameSessionContext = createContext<

@@ -2,6 +2,7 @@
 export type {
   HighScoreRepositoryPort,
   HighScore,
+  HighScoreChangeListener,
 } from './ports/HighScoreRepositoryPort'
 
 // Use Cases

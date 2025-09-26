@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useState, useRef, ReactNode } from 'react'
-import { GameSession, GameSettings, GameMode } from '@/domain'
+import { ReactNode, useCallback, useEffect, useState } from 'react'
+import { GameMode, GameSession, GameSettings } from '@/domain'
 import { diContainer } from '@/infrastructure'
 import {
   GameSessionContext,
   GameSessionContextValue,
 } from './GameSessionContext'
-import { fromGameSession } from '@/application/ports/HighScoreRepositoryPort.ts'
 
 interface GameSessionProviderProps {
   children: ReactNode
@@ -15,29 +14,23 @@ export function GameSessionProvider({ children }: GameSessionProviderProps) {
   const [session, setSession] = useState<GameSession>(() =>
     GameSession.create(GameSettings.createWithAllTables(GameMode.ADDITION))
   )
-  const currentScoreRef = useRef<string | null>(null)
 
-  const {
-    startGameUseCase,
-    answerProblemUseCase,
-    generateProblemUseCase,
-    manageHighScoresUseCase,
-  } = diContainer.getUseCases()
+  const { startGameUseCase, answerProblemUseCase, generateProblemUseCase } =
+    diContainer.getUseCases()
 
   const startGame = useCallback(
     (gameSettings: GameSettings) => {
-      const newSession = startGameUseCase.execute(session, gameSettings)
+      const newSession = startGameUseCase.execute(gameSettings)
       const sessionWithProblem = generateProblemUseCase.execute(newSession)
       setSession(sessionWithProblem)
     },
-    [session, startGameUseCase, generateProblemUseCase]
+    [startGameUseCase, generateProblemUseCase]
   )
 
   const answerProblem = useCallback(
     (selectedAnswer: number) => {
       const result = answerProblemUseCase.execute(session, selectedAnswer)
       setSession(result.session)
-
       return {
         events: result.events,
         generateNextProblem: () => {
@@ -84,20 +77,6 @@ export function GameSessionProvider({ children }: GameSessionProviderProps) {
     }
   }, [session, hideLevelUp])
 
-  // Live score saving - create/update high score entry as the game progresses
-  useEffect(() => {
-    const gameState = session.toPlainObject()
-
-    if (gameState.isGameRunning && gameState.score > 0) {
-      manageHighScoresUseCase.addScore(fromGameSession(session))
-    }
-
-    // Clear the reference when game stops
-    if (!gameState.isGameRunning) {
-      currentScoreRef.current = null
-    }
-  }, [session, manageHighScoresUseCase])
-
   const value: GameSessionContextValue = {
     gameState: session.toPlainObject(),
     startGame,
@@ -106,7 +85,6 @@ export function GameSessionProvider({ children }: GameSessionProviderProps) {
     hideLevelUp,
     updateFallingBlocks,
     updateGameSettings,
-    asHighScore: fromGameSession(session),
   }
 
   return (

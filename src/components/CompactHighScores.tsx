@@ -1,10 +1,9 @@
 import { Box, Timeline } from '@chakra-ui/react'
-import { HighScore } from '@/application'
 import { useGameSession } from '@/presentation/hooks/useGameSession.ts'
 import { useHighScores } from '@/presentation/hooks/useHighScores.ts'
 import { FaLongArrowAltLeft } from 'react-icons/fa'
 
-const getScoreBlock = (score: HighScore, rank: number, isCurrent: boolean) => (
+const getScoreBlock = (score: {id:string, score:number}, rank: number, isCurrent: boolean) => (
   <Timeline.Item key={score.id}>
     <Timeline.Connector>
       <Timeline.Separator />
@@ -24,12 +23,13 @@ const getScoreBlock = (score: HighScore, rank: number, isCurrent: boolean) => (
 )
 
 export default function CompactHighScores() {
-  const { gameState, asHighScore } = useGameSession()
+  const { gameState } = useGameSession()
   const { scores } = useHighScores(gameState.mode)
 
   // Add current game score if it's not already in the list and game is running
   const currentHighScore = scores.some((s) => s.id === gameState.id)
-  console.log(scores)
+
+
   // Sort all scores and take top 10, but mark which one is current
   return (
     <Box
@@ -47,8 +47,10 @@ export default function CompactHighScores() {
           getScoreBlock(score, index + 1, score.id == gameState.id)
         )}
 
-        {!currentHighScore &&
-          getScoreBlock(asHighScore, scores.length + 12, true)}
+          {!currentHighScore && (
+              getScoreBlock({id:gameState.id, score: gameState.score}, scores.length + 1, true)
+          )}
+
       </Timeline.Root>
     </Box>
   )

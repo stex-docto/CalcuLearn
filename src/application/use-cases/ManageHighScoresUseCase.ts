@@ -1,5 +1,9 @@
 import { GameMode } from '@/domain'
-import { HighScore, HighScoreRepositoryPort } from '@/application'
+import {
+  HighScore,
+  HighScoreRepositoryPort,
+  HighScoreChangeListener,
+} from '@/application'
 
 export class ManageHighScoresUseCase {
   constructor(private readonly repository: HighScoreRepositoryPort) {}
@@ -8,11 +12,7 @@ export class ManageHighScoresUseCase {
     return this.repository.getHighScores(mode)
   }
 
-  addScore(score: HighScore): void {
-    this.repository.addScore(score)
-  }
-
-  clearScores(mode: GameMode): void {
-    this.repository.clearScores(mode)
+  subscribe(listener: HighScoreChangeListener): () => void {
+    return this.repository.subscribe(listener)
   }
 }

@@ -35,10 +35,12 @@ class DIContainer {
       const highScoreRepositoryAdapter = new LocalStorageHighScoreAdapter()
 
       // Create use cases
-      const startGameUseCase = new StartGameUseCase(highScoreRepositoryAdapter)
-      const answerProblemUseCase = new AnswerProblemUseCase()
+      const startGameUseCase = new StartGameUseCase()
       const generateProblemUseCase = new GenerateProblemUseCase()
       const manageHighScoresUseCase = new ManageHighScoresUseCase(
+        highScoreRepositoryAdapter
+      )
+      const answerProblemUseCase = new AnswerProblemUseCase(
         highScoreRepositoryAdapter
       )
 

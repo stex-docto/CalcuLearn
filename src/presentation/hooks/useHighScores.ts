@@ -12,21 +12,16 @@ export function useHighScores(mode: GameMode) {
     setScores(highScores)
   }, [manageHighScoresUseCase, mode])
 
-  const addScore = useCallback(
-    (score: HighScore) => {
-      manageHighScoresUseCase.addScore(score)
-      loadScores()
-    },
-    [manageHighScoresUseCase, loadScores]
-  )
-
-  // Load scores when mode changes
+  // Load scores when mode changes and subscribe to updates
   useEffect(() => {
     loadScores()
-  }, [loadScores])
 
-  return {
-    scores,
-    addScore,
-  }
+    return manageHighScoresUseCase.subscribe((changedMode, newScores) => {
+      if (changedMode === mode) {
+        setScores(newScores)
+      }
+    })
+  }, [loadScores, manageHighScoresUseCase, mode])
+
+  return { scores }
 }

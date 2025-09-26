@@ -1,7 +1,14 @@
-import { HighScore, HighScoreRepositoryPort } from '@/application'
+import {
+  HighScore,
+  HighScoreChangeListener,
+  HighScoreRepositoryPort,
+} from '@/application'
 import { GameMode } from '@/domain'
+import { ScoreNotification } from '@/application/ports/HighScoreRepositoryPort.ts'
 
 export class LocalStorageHighScoreAdapter implements HighScoreRepositoryPort {
+  private listeners: Set<HighScoreChangeListener> = new Set()
+
   getHighScores(mode: GameMode): HighScore[] {
     try {
       const stored = localStorage.getItem(this.getStorageKey(mode))
@@ -28,36 +35,31 @@ export class LocalStorageHighScoreAdapter implements HighScoreRepositoryPort {
   addScore(score: HighScore): void {
     try {
       const mode = score.mode
-      const existingScores = this.getHighScores(mode)
 
-      // Check if this score ID already exists (for live updates)
-      const existingIndex = existingScores.findIndex((s) => s.id === score.id)
+      const existingScores = new Map<HighScore['id'], HighScore>()
+      this.getHighScores(mode).forEach((s) => existingScores.set(s.id, s))
 
-      let newScores: HighScore[]
-      if (existingIndex >= 0) {
-        // Update existing score
-        newScores = [...existingScores]
-        newScores[existingIndex] = score
-      } else {
-        // Add new score
-        newScores = [...existingScores, score]
-      }
+      existingScores.set(score.id, score)
 
       // Sort by score descending and keep only top 10
-      const topScores = newScores.sort((a, b) => b.score - a.score).slice(0, 10)
+      const topScores = [...existingScores.values()]
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 10)
 
       localStorage.setItem(this.getStorageKey(mode), JSON.stringify(topScores))
+      this.notifyListeners(mode, topScores)
     } catch (error) {
       console.error('Error saving high score:', error)
     }
   }
 
-  clearScores(mode: GameMode): void {
-    try {
-      localStorage.removeItem(this.getStorageKey(mode))
-    } catch (error) {
-      console.error('Error clearing high scores:', error)
-    }
+  subscribe(listener: HighScoreChangeListener): () => void {
+    this.listeners.add(listener)
+    return () => this.listeners.delete(listener)
+  }
+
+  private notifyListeners(mode: GameMode, scores: ScoreNotification): void {
+    this.listeners.forEach((listener) => listener(mode, scores))
   }
 
   private getStorageKey(mode: GameMode): string {
