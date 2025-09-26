@@ -65,7 +65,7 @@ export default function GameBoard() {
       </VStack>
     )
   }
-*
+
   return (
     <VStack gap={{ base: 3, md: 4 }} align="center">
       <Box
