@@ -3,7 +3,11 @@ import { useGameSession } from '@/presentation/hooks/useGameSession.ts'
 import { useHighScores } from '@/presentation/hooks/useHighScores.ts'
 import { FaLongArrowAltLeft } from 'react-icons/fa'
 
-const getScoreBlock = (score: {id:string, score:number}, rank: number, isCurrent: boolean) => (
+const getScoreBlock = (
+  score: { id: string; score: number },
+  rank: number,
+  isCurrent: boolean
+) => (
   <Timeline.Item key={score.id}>
     <Timeline.Connector>
       <Timeline.Separator />
@@ -29,28 +33,20 @@ export default function CompactHighScores() {
   // Add current game score if it's not already in the list and game is running
   const currentHighScore = scores.some((s) => s.id === gameState.id)
 
-
   // Sort all scores and take top 10, but mark which one is current
   return (
-    <Box
-      bg="bg.subtle"
-      p={3}
-      borderRadius="md"
-      border="1px solid"
-      borderColor="border.muted"
-      minH="300px"
-      maxH="400px"
-      overflow="hidden"
-    >
+    <Box width="100px" p={4}>
       <Timeline.Root variant="subtle">
         {scores.map((score, index) =>
           getScoreBlock(score, index + 1, score.id == gameState.id)
         )}
 
-          {!currentHighScore && (
-              getScoreBlock({id:gameState.id, score: gameState.score}, scores.length + 1, true)
+        {!currentHighScore &&
+          getScoreBlock(
+            { id: gameState.id, score: gameState.score },
+            scores.length + 1,
+            true
           )}
-
       </Timeline.Root>
     </Box>
   )

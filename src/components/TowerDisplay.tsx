@@ -1,7 +1,6 @@
 import { Box } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import type { GameState } from '@/presentation/types/GameState'
-import CompactHighScores from '@components/CompactHighScores.tsx'
 
 type BlockData = GameState['tower'][0]
 
@@ -20,7 +19,14 @@ export default function TowerDisplay({
   fallingBlocks,
 }: TowerDisplayProps) {
   return (
-    <Box width="100%" height="100%" overflow="hidden" colorPalette="blue">
+    <Box
+      width={{ base: '400px', md: '500px' }}
+      height={{ base: '400px', md: '500px' }}
+      overflow="hidden"
+      colorPalette="blue"
+      backgroundImage="url('/background.jpg')"
+      backgroundSize={{ base: '400px 400px', md: '500px 500px' }}
+    >
       <MotionBox
         width="100%"
         height="100%"
@@ -32,10 +38,6 @@ export default function TowerDisplay({
           duration: 1.2,
         }}
       >
-        <Box minW="200px">
-          <CompactHighScores />
-        </Box>
-
         {/* Tower blocks */}
         {tower.map((block, visibleIndex) => {
           const finalBottomPosition = visibleIndex * BLOCK_HEIGHT + 10
@@ -119,16 +121,6 @@ export default function TowerDisplay({
             }}
           />
         ))}
-
-        {/* Ground line */}
-        <Box
-          position="absolute"
-          bottom="10px"
-          left="0"
-          right="0"
-          height="2px"
-          bg="border.emphasized"
-        />
       </MotionBox>
     </Box>
   )

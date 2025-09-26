@@ -1,9 +1,10 @@
-import { Box, Heading, Text, VStack } from '@chakra-ui/react'
+import { Box, Heading, HStack, Text, VStack } from '@chakra-ui/react'
 import { motion } from 'framer-motion'
 import TowerDisplay from './TowerDisplay'
 import ModeSelector from './ModeSelector'
 import { useTranslation } from 'react-i18next'
 import { useGameSession } from '@/presentation/hooks/useGameSession.ts'
+import CompactHighScores from '@components/CompactHighScores.tsx'
 
 const MotionBox = motion.create(Box)
 
@@ -64,26 +65,24 @@ export default function GameBoard() {
       </VStack>
     )
   }
-
+*
   return (
-    <VStack gap={{ base: 3, md: 4 }} align="stretch">
+    <VStack gap={{ base: 3, md: 4 }} align="center">
       <Box
         bg="bg.subtle"
         borderRadius="lg"
         border="2px solid"
         borderColor="border.muted"
         overflow="hidden"
+        position="relative"
       >
-        <Box
-          position="relative"
-          minH={{ base: '400px', md: '500px' }}
-          p={{ base: 4, md: 6 }}
-        >
+        <HStack align="start">
+          <CompactHighScores />
           <TowerDisplay
             tower={gameState.tower}
             fallingBlocks={gameState.fallingBlocks}
           />
-        </Box>
+        </HStack>
       </Box>
     </VStack>
   )
