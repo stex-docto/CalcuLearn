@@ -1,27 +1,26 @@
-import { GameEvent, GameSession } from '@/domain'
+import { GameSession } from '@/domain'
 import { HighScoreRepositoryPort } from '@/application'
 
 export interface AnswerProblemResult {
   session: GameSession
-  events: GameEvent[]
 }
 
 export class AnswerProblemUseCase {
   constructor(protected highScoreRepository: HighScoreRepositoryPort) {}
 
-  execute(session: GameSession, selectedAnswer: number): AnswerProblemResult {
-    const result = session.answerProblem(selectedAnswer)
+  execute(session: GameSession, selectedAnswer: number): GameSession {
+    const newSession = session.answerProblem(selectedAnswer)
 
-    if (result.session.score.toNumber() > 0) {
+    if (newSession.score.toNumber() > 0) {
       this.highScoreRepository.addScore({
-        id: result.session.id,
-        score: result.session.score.toNumber(),
+        id: newSession.id,
+        score: newSession.score.toNumber(),
         date: new Date().toISOString(),
-        level: result.session.level.toNumber(),
-        mode: result.session.gameSettings.mode,
+        level: newSession.level.toNumber(),
+        mode: newSession.gameSettings.mode,
       })
     }
 
-    return result
+    return newSession
   }
 }

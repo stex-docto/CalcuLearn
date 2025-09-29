@@ -15,7 +15,7 @@ export class Tower {
     const isComplete = newBlocks.length >= Tower.MAX_HEIGHT
 
     return {
-      tower: new Tower(isComplete ? [] : newBlocks),
+      tower: new Tower(newBlocks),
       isComplete,
     }
   }

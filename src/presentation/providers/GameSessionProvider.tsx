@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect, useState } from 'react'
+import { ReactNode, useCallback, useState } from 'react'
 import { GameMode, GameSession, GameSettings } from '@/domain'
 import { diContainer } from '@/infrastructure'
 import {
@@ -15,8 +15,12 @@ export function GameSessionProvider({ children }: GameSessionProviderProps) {
     GameSession.create(GameSettings.createWithAllTables(GameMode.ADDITION))
   )
 
-  const { startGameUseCase, answerProblemUseCase, generateProblemUseCase } =
-    diContainer.getUseCases()
+  const {
+    startGameUseCase,
+    answerProblemUseCase,
+    generateProblemUseCase,
+    levelUpUseCase,
+  } = diContainer.getUseCases()
 
   const startGame = useCallback(
     (gameSettings: GameSettings) => {
@@ -29,14 +33,11 @@ export function GameSessionProvider({ children }: GameSessionProviderProps) {
 
   const answerProblem = useCallback(
     (selectedAnswer: number) => {
-      const result = answerProblemUseCase.execute(session, selectedAnswer)
-      setSession(result.session)
+      const newSession = answerProblemUseCase.execute(session, selectedAnswer)
+      setSession(newSession)
       return {
-        events: result.events,
         generateNextProblem: () => {
-          const sessionWithProblem = generateProblemUseCase.execute(
-            result.session
-          )
+          const sessionWithProblem = generateProblemUseCase.execute(newSession)
           setSession(sessionWithProblem)
         },
       }
@@ -49,10 +50,10 @@ export function GameSessionProvider({ children }: GameSessionProviderProps) {
     setSession(stoppedSession)
   }, [session])
 
-  const hideLevelUp = useCallback(() => {
-    const updatedSession = session.hideLevelUp()
+  const levelUp = useCallback(() => {
+    const updatedSession = levelUpUseCase.execute(session)
     setSession(updatedSession)
-  }, [session])
+  }, [session, levelUpUseCase])
 
   const updateFallingBlocks = useCallback(() => {
     const cleanedSession = session.cleanupFallingBlocks()
@@ -67,22 +68,12 @@ export function GameSessionProvider({ children }: GameSessionProviderProps) {
     [session]
   )
 
-  // Auto-hide level up animation after 3 seconds
-  useEffect(() => {
-    if (session.showLevelUp) {
-      const timer = setTimeout(() => {
-        hideLevelUp()
-      }, 3000)
-      return () => clearTimeout(timer)
-    }
-  }, [session, hideLevelUp])
-
   const value: GameSessionContextValue = {
     gameState: session.toPlainObject(),
     startGame,
     answerProblem,
     stopGame,
-    hideLevelUp,
+    levelUp,
     updateFallingBlocks,
     updateGameSettings,
   }

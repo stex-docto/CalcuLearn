@@ -1,15 +1,14 @@
 import { createContext } from 'react'
-import { GameSession, GameSettings, GameEvent } from '@/domain'
+import { GameSession, GameSettings } from '@/domain'
 
 export interface GameSessionContextValue {
   gameState: ReturnType<GameSession['toPlainObject']>
   startGame: (gameSettings: GameSettings) => void
   answerProblem: (selectedAnswer: number) => {
-    events: GameEvent[]
     generateNextProblem: () => void
   }
   stopGame: () => void
-  hideLevelUp: () => void
+  levelUp: () => void
   updateFallingBlocks: () => void
   updateGameSettings: (gameSettings: GameSettings) => void
 }

@@ -2,6 +2,7 @@ import { LocalStorageHighScoreAdapter } from '@/infrastructure'
 import {
   AnswerProblemUseCase,
   GenerateProblemUseCase,
+  LevelUpUseCase,
   ManageHighScoresUseCase,
   StartGameUseCase,
 } from '@/application'
@@ -12,6 +13,7 @@ class DIContainer {
     startGameUseCase: StartGameUseCase
     answerProblemUseCase: AnswerProblemUseCase
     generateProblemUseCase: GenerateProblemUseCase
+    levelUpUseCase: LevelUpUseCase
     manageHighScoresUseCase: ManageHighScoresUseCase
   } | null = null
 
@@ -28,6 +30,7 @@ class DIContainer {
     startGameUseCase: StartGameUseCase
     answerProblemUseCase: AnswerProblemUseCase
     generateProblemUseCase: GenerateProblemUseCase
+    levelUpUseCase: LevelUpUseCase
     manageHighScoresUseCase: ManageHighScoresUseCase
   } {
     if (!this.useCases) {
@@ -37,6 +40,7 @@ class DIContainer {
       // Create use cases
       const startGameUseCase = new StartGameUseCase()
       const generateProblemUseCase = new GenerateProblemUseCase()
+      const levelUpUseCase = new LevelUpUseCase()
       const manageHighScoresUseCase = new ManageHighScoresUseCase(
         highScoreRepositoryAdapter
       )
@@ -48,6 +52,7 @@ class DIContainer {
         startGameUseCase,
         answerProblemUseCase,
         generateProblemUseCase,
+        levelUpUseCase,
         manageHighScoresUseCase,
       }
     }

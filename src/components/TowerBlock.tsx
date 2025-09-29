@@ -26,7 +26,7 @@ const BLOCK_CONFIGS = [
   // Block 9 (l9.PNG)
   { x: 24, y: -22, width: 55, height: 25, scale: 1.72 },
   // Block 10 (l10.PNG) - Top piece
-  { x: 0, y: 0, width: 50, height: 25, scale: 2.0 },
+  { x: 41, y: -38, width: 50, height: 25, scale: 1.4 },
 ]
 
 export default function TowerBlock({

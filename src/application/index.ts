@@ -12,4 +12,5 @@ export {
   type AnswerProblemResult,
 } from './use-cases/AnswerProblemUseCase'
 export { GenerateProblemUseCase } from './use-cases/GenerateProblemUseCase'
+export { LevelUpUseCase } from './use-cases/LevelUpUseCase'
 export { ManageHighScoresUseCase } from './use-cases/ManageHighScoresUseCase'

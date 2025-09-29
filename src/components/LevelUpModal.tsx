@@ -8,7 +8,7 @@ const MotionBox = motion.create(Box)
 
 export default function LevelUpModal() {
   const { t } = useTranslation()
-  const { gameState, hideLevelUp } = useGameSession()
+  const { gameState, levelUp } = useGameSession()
 
   return (
     <Center>
@@ -20,6 +20,10 @@ export default function LevelUpModal() {
         shadow="2xl"
         position="relative"
         overflow="hidden"
+        padding={4}
+        alignSelf="stretch"
+        justifySelf="stretch"
+        flex={1}
       >
         {/* Animated background effects */}
         {Array.from({ length: 15 }).map((_, i) => (
@@ -95,7 +99,7 @@ export default function LevelUpModal() {
               {t('levelUpKeepBuilding')} 🏗️
             </Text>
           </VStack>
-          <Button onClick={hideLevelUp}>{t('levelUpContinue')} 🚀</Button>
+          <Button onClick={levelUp}>{t('levelUpContinue')} 🚀</Button>
         </VStack>
       </Box>
     </Center>

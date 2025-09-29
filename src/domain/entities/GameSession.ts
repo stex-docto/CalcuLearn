@@ -61,15 +61,15 @@ export class GameSession {
     )
   }
 
-  answerProblem(selectedAnswer: number): {
-    session: GameSession
-    events: GameEvent[]
-  } {
-    if (this.status !== GameStatus.RUNNING || this.givenAnswer !== null) {
-      return { session: this, events: [] }
+  answerProblem(selectedAnswer: number): GameSession {
+    if (
+      this.status !== GameStatus.RUNNING ||
+      this.givenAnswer !== null ||
+      this.showLevelUp
+    ) {
+      return this
     }
 
-    const events: GameEvent[] = []
     const isCorrect = this.currentProblem.isCorrectAnswer(selectedAnswer)
 
     if (isCorrect) {
@@ -85,27 +85,20 @@ export class GameSession {
         newScore = newScore.bank()
         newLevel = this.level.increment()
         showLevelUp = true
-        events.push({ type: 'TOWER_COMPLETED', level: newLevel.toNumber() })
-        events.push({ type: 'LEVEL_UP', level: newLevel.toNumber() })
       }
 
-      events.push({ type: 'CORRECT_ANSWER', block: newBlock })
-
-      return {
-        session: new GameSession(
-          this.id,
-          tower,
-          this.currentProblem,
-          newScore,
-          newLevel,
-          this.status,
-          this.fallingBlocks,
-          this.gameSettings,
-          showLevelUp,
-          selectedAnswer
-        ),
-        events,
-      }
+      return new GameSession(
+        this.id,
+        tower,
+        this.currentProblem,
+        newScore,
+        newLevel,
+        this.status,
+        this.fallingBlocks,
+        this.gameSettings,
+        showLevelUp,
+        selectedAnswer
+      )
     } else {
       const penaltyBlocks = Math.max(0, this.level.toNumber() - 1)
       const { tower, removedBlocks } = this.tower.removeTopBlocks(penaltyBlocks)
@@ -119,27 +112,18 @@ export class GameSession {
 
       const newScore = this.score.subtract(penaltyBlocks)
 
-      events.push({
-        type: 'WRONG_ANSWER',
-        removedBlocks: removedBlocks.length,
-        fallingBlock,
-      })
-
-      return {
-        session: new GameSession(
-          this.id,
-          tower,
-          this.currentProblem,
-          newScore,
-          this.level,
-          this.status,
-          newFallingBlocks,
-          this.gameSettings,
-          false,
-          selectedAnswer
-        ),
-        events,
-      }
+      return new GameSession(
+        this.id,
+        tower,
+        this.currentProblem,
+        newScore,
+        this.level,
+        this.status,
+        newFallingBlocks,
+        this.gameSettings,
+        false,
+        selectedAnswer
+      )
     }
   }
 
@@ -158,18 +142,18 @@ export class GameSession {
     )
   }
 
-  hideLevelUp(): GameSession {
+  levelUp(problem: Problem): GameSession {
     return new GameSession(
       this.id,
-      this.tower,
-      this.currentProblem,
+      Tower.empty(),
+      problem,
       this.score,
       this.level,
       this.status,
       this.fallingBlocks,
       this.gameSettings,
       false,
-      this.givenAnswer
+      null
     )
   }
 
@@ -228,5 +212,3 @@ export class GameSession {
 export type GameEvent =
   | { type: 'CORRECT_ANSWER'; block: Block }
   | { type: 'WRONG_ANSWER'; removedBlocks: number; fallingBlock: Block }
-  | { type: 'TOWER_COMPLETED'; level: number }
-  | { type: 'LEVEL_UP'; level: number }
