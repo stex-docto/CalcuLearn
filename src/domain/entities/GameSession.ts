@@ -1,5 +1,12 @@
 import { Tower } from './Tower'
-import { GameSettings, GameStatus, Level, Problem, Score } from '@/domain'
+import {
+  GameSettings,
+  GameStatus,
+  Level,
+  Problem,
+  ProblemSet,
+  Score,
+} from '@/domain'
 import { Block } from './Block'
 
 export class GameSession {
@@ -7,6 +14,7 @@ export class GameSession {
     public readonly id: string,
     public readonly tower: Tower,
     public readonly currentProblem: Problem,
+    public readonly problemSet: ProblemSet,
     public readonly score: Score,
     public readonly level: Level,
     public readonly status: GameStatus,
@@ -17,10 +25,12 @@ export class GameSession {
   ) {}
 
   static create(gameSettings: GameSettings): GameSession {
+    const problemSet = ProblemSet.generate(gameSettings)
     return new GameSession(
       crypto.randomUUID(),
       Tower.empty(),
       Problem.empty(gameSettings.mode),
+      problemSet,
       Score.zero(),
       Level.initial(),
       GameStatus.STOPPED,
@@ -36,6 +46,7 @@ export class GameSession {
       crypto.randomUUID(),
       this.tower,
       this.currentProblem,
+      this.problemSet,
       this.score,
       this.level,
       GameStatus.RUNNING,
@@ -51,6 +62,7 @@ export class GameSession {
       this.id,
       this.tower,
       Problem.empty(this.gameSettings.mode),
+      this.problemSet,
       this.score,
       this.level,
       GameStatus.STOPPED,
@@ -87,10 +99,17 @@ export class GameSession {
         showLevelUp = true
       }
 
+      // Update problem stats and get updated problemSet
+      const updatedProblemSet = this.problemSet.updateProblemStats(
+        this.currentProblem.id.toString(),
+        true
+      )
+
       return new GameSession(
         this.id,
         tower,
         this.currentProblem,
+        updatedProblemSet,
         newScore,
         newLevel,
         this.status,
@@ -112,10 +131,17 @@ export class GameSession {
 
       const newScore = this.score.subtract(penaltyBlocks)
 
+      // Update problem stats for wrong answer
+      const updatedProblemSet = this.problemSet.updateProblemStats(
+        this.currentProblem.id.toString(),
+        false
+      )
+
       return new GameSession(
         this.id,
         tower,
         this.currentProblem,
+        updatedProblemSet,
         newScore,
         this.level,
         this.status,
@@ -132,6 +158,7 @@ export class GameSession {
       this.id,
       this.tower,
       problem,
+      this.problemSet,
       this.score,
       this.level,
       this.status,
@@ -147,6 +174,7 @@ export class GameSession {
       this.id,
       Tower.empty(),
       problem,
+      this.problemSet,
       this.score,
       this.level,
       this.status,
@@ -157,11 +185,17 @@ export class GameSession {
     )
   }
 
+  getNextProblem(): Problem | null {
+    return this.problemSet.getRandomProblem()
+  }
+
   updateGameSettings(newGameSettings: GameSettings): GameSession {
+    const newProblemSet = ProblemSet.generate(newGameSettings)
     return new GameSession(
       this.id,
       this.tower,
       Problem.empty(newGameSettings.mode),
+      newProblemSet,
       this.score,
       this.level,
       this.status,
@@ -180,6 +214,7 @@ export class GameSession {
       this.id,
       this.tower,
       this.currentProblem,
+      this.problemSet,
       this.score,
       this.level,
       this.status,

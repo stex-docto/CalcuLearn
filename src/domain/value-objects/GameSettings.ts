@@ -1,16 +1,16 @@
-import { GameMode, TableSelection } from '@/domain'
+import { Operation, TableSelection } from '@/domain'
 
 export class GameSettings {
   constructor(
-    public readonly mode: GameMode,
+    public readonly mode: Operation,
     public readonly tableSelection: TableSelection
   ) {}
 
-  static create(mode: GameMode, tables: number[]): GameSettings {
+  static create(mode: Operation, tables: number[]): GameSettings {
     return new GameSettings(mode, TableSelection.create(tables))
   }
 
-  static createWithAllTables(mode: GameMode): GameSettings {
+  static createWithAllTables(mode: Operation): GameSettings {
     return new GameSettings(mode, TableSelection.all())
   }
 

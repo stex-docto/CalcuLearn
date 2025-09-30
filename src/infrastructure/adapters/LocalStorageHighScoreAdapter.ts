@@ -3,13 +3,13 @@ import {
   HighScoreChangeListener,
   HighScoreRepositoryPort,
 } from '@/application'
-import { GameMode } from '@/domain'
+import { Operation } from '@/domain'
 import { ScoreNotification } from '@/application/ports/HighScoreRepositoryPort.ts'
 
 export class LocalStorageHighScoreAdapter implements HighScoreRepositoryPort {
   private listeners: Set<HighScoreChangeListener> = new Set()
 
-  getHighScores(mode: GameMode): HighScore[] {
+  getHighScores(mode: Operation): HighScore[] {
     try {
       const stored = localStorage.getItem(this.getStorageKey(mode))
       if (!stored) return []
@@ -58,11 +58,11 @@ export class LocalStorageHighScoreAdapter implements HighScoreRepositoryPort {
     return () => this.listeners.delete(listener)
   }
 
-  private notifyListeners(mode: GameMode, scores: ScoreNotification): void {
+  private notifyListeners(mode: Operation, scores: ScoreNotification): void {
     this.listeners.forEach((listener) => listener(mode, scores))
   }
 
-  private getStorageKey(mode: GameMode): string {
+  private getStorageKey(mode: Operation): string {
     return `calculearn-scores-${mode}`
   }
 }

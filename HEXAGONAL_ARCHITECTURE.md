@@ -47,7 +47,7 @@ The core business logic layer, containing:
 - **Block**: Individual tower blocks with properties
 
 #### Value Objects
-- **Score**, **Level**, **GameMode**, **GameStatus**: Game state values
+- **Score**, **Level**, **Operation**, **GameStatus**: Game state values
 - **BlockId**, **BlockValue**, **Position**, **Color**: Block properties
 - **ProblemId**, **Question**, **Answer**, **Options**: Problem components
 - **Difficulty**, **Operation**: Problem configuration

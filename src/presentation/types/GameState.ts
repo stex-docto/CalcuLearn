@@ -1,4 +1,4 @@
-import { GameMode } from '@/domain'
+import { Operation } from '@/domain'
 
 export interface GameState {
   tower: Array<{
@@ -27,6 +27,6 @@ export interface GameState {
     color: string
     blockIndex: number
   }>
-  mode: GameMode
+  mode: Operation
   showLevelUp: boolean
 }

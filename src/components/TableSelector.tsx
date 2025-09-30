@@ -1,10 +1,10 @@
 import { Box, Button, SimpleGrid, Text, VStack } from '@chakra-ui/react'
 import { useState } from 'react'
-import { GameMode, GameSettings } from '@/domain'
+import { Operation, GameSettings } from '@/domain'
 import { useTranslation } from 'react-i18next'
 
 interface TableSelectorProps {
-  mode: GameMode
+  mode: Operation
   onStartGame: (gameSettings: GameSettings) => void
   isGameRunning: boolean
 }
@@ -44,13 +44,13 @@ export default function TableSelector({
     }
   }
 
-  const modeColor = mode === GameMode.ADDITION ? 'blue' : 'purple'
+  const modeColor = mode === Operation.ADDITION ? 'blue' : 'purple'
 
   return (
     <VStack gap={6} align="stretch" width="100%">
       <Box textAlign="center">
         <Text fontSize="xl" fontWeight="bold" mb={2}>
-          {mode === GameMode.ADDITION
+          {mode === Operation.ADDITION
             ? t('tablesAddition')
             : t('tablesMultiplication')}
         </Text>
@@ -110,7 +110,7 @@ export default function TableSelector({
         disabled={isGameRunning}
       >
         {t('gameStart')}{' '}
-        {mode === GameMode.ADDITION
+        {mode === Operation.ADDITION
           ? t('modesAddition')
           : t('modesMultiplication')}
         {selectedTables.length === 0 && ` (${t('tablesAll')})`}

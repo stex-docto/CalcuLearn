@@ -1,6 +1,6 @@
 import { Badge, Box, HStack, Separator, Text, VStack } from '@chakra-ui/react'
 import { FaPlus, FaTimes, FaTrophy } from 'react-icons/fa'
-import { GameMode } from '@/domain'
+import { Operation } from '@/domain'
 import { useTranslation } from 'react-i18next'
 import { useHighScores } from '@/presentation/hooks/useHighScores.ts'
 
@@ -15,13 +15,13 @@ function formatDate(dateString: string): string {
 }
 
 interface HighScoresProps {
-  mode: GameMode
+  mode: Operation
 }
 
 export default function HighScores({ mode }: HighScoresProps) {
   const { t } = useTranslation()
-  const ModeIcon = mode === GameMode.ADDITION ? FaPlus : FaTimes
-  const modeName = mode === GameMode.ADDITION ? 'Addition' : 'Multiplication'
+  const ModeIcon = mode === Operation.ADDITION ? FaPlus : FaTimes
+  const modeName = mode === Operation.ADDITION ? 'Addition' : 'Multiplication'
 
   const { scores } = useHighScores(mode)
 

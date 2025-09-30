@@ -1,4 +1,4 @@
-import { GameMode } from '@/domain'
+import { Operation } from '@/domain'
 import {
   HighScore,
   HighScoreRepositoryPort,
@@ -8,7 +8,7 @@ import {
 export class ManageHighScoresUseCase {
   constructor(private readonly repository: HighScoreRepositoryPort) {}
 
-  getHighScores(mode: GameMode): HighScore[] {
+  getHighScores(mode: Operation): HighScore[] {
     return this.repository.getHighScores(mode)
   }
 

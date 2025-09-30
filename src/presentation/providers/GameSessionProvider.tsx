@@ -1,5 +1,5 @@
 import { ReactNode, useCallback, useState } from 'react'
-import { GameMode, GameSession, GameSettings } from '@/domain'
+import { Operation, GameSession, GameSettings } from '@/domain'
 import { diContainer } from '@/infrastructure'
 import {
   GameSessionContext,
@@ -12,7 +12,7 @@ interface GameSessionProviderProps {
 
 export function GameSessionProvider({ children }: GameSessionProviderProps) {
   const [session, setSession] = useState<GameSession>(() =>
-    GameSession.create(GameSettings.createWithAllTables(GameMode.ADDITION))
+    GameSession.create(GameSettings.createWithAllTables(Operation.ADDITION))
   )
 
   const {

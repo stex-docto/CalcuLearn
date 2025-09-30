@@ -1,22 +1,22 @@
-import { GameMode } from '@/domain'
+import { Operation } from '@/domain'
 
 export interface HighScore {
   id: string
   score: number
   date: string
   level: number
-  mode: GameMode
+  mode: Operation
 }
 
 export type ScoreNotification = HighScore[]
 
 export type HighScoreChangeListener = (
-  mode: GameMode,
+  mode: Operation,
   scores: ScoreNotification
 ) => void
 
 export interface HighScoreRepositoryPort {
-  getHighScores(mode: GameMode): HighScore[]
+  getHighScores(mode: Operation): HighScore[]
 
   addScore(score: HighScore): void
 

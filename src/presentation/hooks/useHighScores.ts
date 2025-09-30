@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
-import { GameMode } from '@/domain'
+import { Operation } from '@/domain'
 import { HighScore } from '@/application'
 import { diContainer } from '@/infrastructure'
 
-export function useHighScores(mode: GameMode) {
+export function useHighScores(mode: Operation) {
   const [scores, setScores] = useState<HighScore[]>([])
   const { manageHighScoresUseCase } = diContainer.getUseCases()
 

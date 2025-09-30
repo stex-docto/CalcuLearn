@@ -1,7 +1,7 @@
 import { Box, Button, HStack, VStack } from '@chakra-ui/react'
 import { FaPlus, FaTimes } from 'react-icons/fa'
 import { useCallback, useState } from 'react'
-import { GameMode, GameSettings } from '@/domain'
+import { Operation, GameSettings } from '@/domain'
 import TableSelector from './TableSelector'
 import { useTranslation } from 'react-i18next'
 
@@ -16,10 +16,12 @@ export default function ModeSelector({
   isGameRunning,
   onUpdateGameSettings,
 }: ModeSelectorProps) {
-  const [selectedMode, setSelectedMode] = useState<GameMode>(GameMode.ADDITION)
+  const [selectedMode, setSelectedMode] = useState<Operation>(
+    Operation.ADDITION
+  )
   const { t } = useTranslation()
   const handleModeChange = useCallback(
-    (newMode: GameMode) => {
+    (newMode: Operation) => {
       setSelectedMode(newMode)
       // Update game settings with new mode to reflect in high scores
       if (onUpdateGameSettings) {
@@ -41,8 +43,8 @@ export default function ModeSelector({
         <Button
           size="lg"
           colorPalette="blue"
-          variant={selectedMode === GameMode.ADDITION ? 'solid' : 'outline'}
-          onClick={() => handleModeChange(GameMode.ADDITION)}
+          variant={selectedMode === Operation.ADDITION ? 'solid' : 'outline'}
+          onClick={() => handleModeChange(Operation.ADDITION)}
         >
           <FaPlus />
           {t('modesAddition')}
@@ -51,9 +53,9 @@ export default function ModeSelector({
           size="lg"
           colorPalette="purple"
           variant={
-            selectedMode === GameMode.MULTIPLICATION ? 'solid' : 'outline'
+            selectedMode === Operation.MULTIPLICATION ? 'solid' : 'outline'
           }
-          onClick={() => handleModeChange(GameMode.MULTIPLICATION)}
+          onClick={() => handleModeChange(Operation.MULTIPLICATION)}
         >
           <FaTimes />
           {t('modesMultiplication')}
